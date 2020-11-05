@@ -1,0 +1,170 @@
+{
+    "metaVersion": "1",
+    "project": "mlbfprcwnlmmlbra0kosim0eobav5gbp",
+    "time": "2020-10-16 15:07:50",
+    "model": {
+        "projectModel": {
+            "datasets": [
+                {
+                    "dataset": {
+                        "identifier": "dataset.facttable",
+                        "title": "Fact Table",
+                        "description": "Fact Table",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.facttable.factsof",
+                                "title": "Records of Fact Table",
+                                "description": "Records of Fact Table",
+                                "folder": "Fact Table",
+                                "grain": [
+                                    {
+                                        "attribute": "attr.facttable.attribute1"
+                                    },
+                                    {
+                                        "dateDimension": "date1"
+                                    }
+                                ]
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "attribute": {
+                                    "identifier": "attr.facttable.attribute1",
+                                    "title": "Attribute1",
+                                    "description": "Attribute1",
+                                    "folder": "Fact Table",
+                                    "defaultLabel": "label.facttable.attribute1",
+                                    "labels": [
+                                        {
+                                            "label": {
+                                                "identifier": "label.facttable.attribute1",
+                                                "title": "Attribute1",
+                                                "description": "",
+                                                "type": "GDC.text",
+                                                "dataType": "VARCHAR(128)"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "facts": [
+                            {
+                                "fact": {
+                                    "identifier": "fact.facttable.fact1",
+                                    "title": "Fact1",
+                                    "folder": "Fact Table",
+                                    "description": "Fact1",
+                                    "dataType": "DECIMAL(12,2)",
+                                    "restricted": false
+                                }
+                            }
+                        ],
+                        "references": [
+                            "date1",
+                            "dataset.dimension1"
+                        ],
+                        "production": true
+                    }
+                },
+                {
+                    "dataset": {
+                        "identifier": "dataset.dimension1",
+                        "title": "Dimension1",
+                        "description": "Dimension1",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.dimension1.dim1",
+                                "title": "Dim1",
+                                "description": "Dim1",
+                                "folder": "Dimension1",
+                                "defaultLabel": "label.dimension1.dim1",
+                                "labels": [
+                                    {
+                                        "label": {
+                                            "identifier": "label.dimension1.dim1",
+                                            "title": "Dim1",
+                                            "description": "",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "attribute": {
+                                    "identifier": "attr.dimension1.dim2",
+                                    "title": "Dim2",
+                                    "description": "Dim2",
+                                    "folder": "Dimension1",
+                                    "defaultLabel": "label.dimension1.dim2",
+                                    "labels": [
+                                        {
+                                            "label": {
+                                                "identifier": "label.dimension1.dim2",
+                                                "title": "Dim2",
+                                                "description": "",
+                                                "type": "GDC.text",
+                                                "dataType": "VARCHAR(128)"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "production": true
+                    }
+                }
+            ],
+            "dateDimensions": [
+                {
+                    "dateDimension": {
+                        "identifier": "date1.dataset.dt",
+                        "identifierPrefix": "date1",
+                        "name": "date1",
+                        "title": "Date1",
+                        "urn": "urn:custom_v2:date",
+                        "bridges": [],
+                        "production": true
+                    }
+                }
+            ],
+            "modelMetadata": {
+                "containCA": true
+            }
+        }
+    },
+    "layout": {
+        "objects": [
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.facttable"
+                },
+                "collapse": false,
+                "x": 545,
+                "y": 234
+            },
+            {
+                "identifier": {
+                    "type": "templateDataset",
+                    "id": "date1"
+                },
+                "collapse": true,
+                "x": 185,
+                "y": 475
+            },
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.dimension1"
+                },
+                "collapse": false,
+                "x": 95,
+                "y": 137
+            }
+        ]
+    }
+}
