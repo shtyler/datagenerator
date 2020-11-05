@@ -1,0 +1,392 @@
+{%-assign out_prefix = "out_generated_" -%}
+{%-assign number_of_lines_fact = "1000" -%}
+{%-assign number_of_lines_dimension = "50" -%}
+
+-----------------------------
+---    Temporary tables  ----
+-----------------------------
+DROP TABLE IF EXISTS tmp_generation_table;
+CREATE TABLE tmp_generation_table
+(
+ID INT
+);
+
+INSERT INTO tmp_generation_table 
+
+SELECT row_number() over () ID 
+FROM system_tables s 
+CROSS JOIN system_tables l 
+
+limit 2000
+;
+-----------------------------
+---    Random functions  ----
+-----------------------------
+CREATE OR REPLACE FUNCTION randomdate (d1 TIMESTAMP, d2 TIMESTAMP) RETURN DATE
+AS
+BEGIN
+  RETURN TO_TIMESTAMP(EXTRACT(EPOCH FROM d1) + RANDOMINT(FLOOR(EXTRACT(EPOCH FROM d2) - EXTRACT(EPOCH FROM d1))::INT));
+END;
+
+CREATE OR REPLACE FUNCTION randomdata (id INT, field VARCHAR, cp BOOLEAN) RETURN VARCHAR
+AS
+BEGIN
+   RETURN CASE WHEN cp is TRUE THEN id::INT || '_' || field
+          ELSE (random()*id)::INT || '_' || field END;
+END;
+
+CREATE OR REPLACE FUNCTION randomfact (minimum INT, maximum INT) RETURN INT
+AS
+BEGIN
+   RETURN (random()*ABS(maximum-minimum))::INT + 
+        CASE WHEN maximum > minimum THEN minimum 
+        ELSE maximum END;
+END;
+
+
+{% comment %} populating connectionpoints array {% endcomment %}
+{%- assign connectionpoints = ''-%}
+{%- for dataset in model.projectModel.datasets -%}
+{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+            {%- if {{current_label == default_label  %}  
+                {%- assign connectionpoints = connectionpoints 
+                    | append: {{dataset_name}} | append: "-" 
+                    | append: {{label_split[-1]}} | append: "-" 
+                    | append: {{label.label.dataType}}| append: "," -%}                
+            {% endif -%}             
+        {%- endfor -%}   
+    {%- endif -%}
+{%- endfor -%} 
+{%- assign connectionpoints = connectionpoints | split: ',' %}
+
+-----------------------------
+ Dropping {{out_prefix}} tables  
+----------------------------- 
+{%- for dataset in model.projectModel.datasets %}
+DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
+{%- endfor %}
+
+------------------------------
+ Creating {{out_prefix}} tables 
+------------------------------
+{% for dataset in model.projectModel.datasets %}
+{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
+
+---- Creating {{out_prefix}}{{dataset_name}} ----
+
+CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
+{{}}
+    {% comment %} cp {% endcomment %} 
+    {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+    {{label_split[-1]}} {{label.label.dataType}}
+        {%- unless forloop.last -%},
+        {% endunless -%}            
+        {%- endfor -%}
+    {%- if dataset.dataset.attributes -%},{%- endif %}      
+    {%- endif -%}
+    {% comment %} attributes {% endcomment %}         
+    {%- for attribute in dataset.dataset.attributes -%}
+        {%- for label in attribute.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+    {{label_split[-1]}} {{label.label.dataType}}
+        {%- unless forloop.last -%},
+    {% endunless -%}            
+        {%- endfor -%}    
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}  
+    {% comment %} references {% endcomment %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
+    {%- for reference in dataset.dataset.references -%}
+        {%- assign reference_split = {{reference | split: "."}} -%}
+        {%- if reference_split[0] == "dataset" -%}
+            {%- for cp in connectionpoints -%}
+                {%- assign current_cp = {{cp | split: '-'}} -%}
+                {%- if reference_split[1] == {{current_cp[0]}} %}{{current_cp[1]}} {{current_cp[2]}}{%- endif -%}                
+            {%- endfor -%}
+        {%- else %}{{reference}} DATE
+        {%- endif -%}
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%} 
+    {% comment %} facts {% endcomment %}
+    {%- if dataset.dataset.facts -%},
+    {% endif %}        
+    {%- for fact in dataset.dataset.facts -%}
+            {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
+            {{fact_split[-1]}} {{fact.fact.dataType}}             
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}     
+{{}}
+{{}} {% comment %} kudrlinky pro Michala {% endcomment %}     
+);
+
+---- Inserting Data to {{out_prefix}}{{dataset_name}} ----
+
+INSERT INTO {{out_prefix}}{{dataset_name}} (
+{{}}    
+    {% comment %} cp {% endcomment %} 
+    {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+    {{label_split[-1]}} 
+        {%- unless forloop.last -%},
+    {% endunless -%}            
+        {%- endfor -%}
+    {%- if dataset.dataset.attributes -%},{%- endif %}      
+    {%- endif -%}
+    {% comment %} attributes {% endcomment %}         
+    {%- for attribute in dataset.dataset.attributes -%}
+        {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
+        {%- for label in attribute.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+    {{label_split[-1]}} 
+        {%- unless forloop.last -%},
+    {% endunless -%}            
+        {%- endfor -%}    
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}         
+    {% comment %} references {% endcomment %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}      
+    {%- for reference in dataset.dataset.references -%}
+        {%- assign reference_split = {{reference | split: "."}} -%}
+        {%- if reference_split[0] == "dataset" -%}
+            {%- for cp in connectionpoints -%}
+                {%- assign current_cp = {{cp | split: '-'}} -%}
+                {%- if reference_split[1] == {{current_cp[0]}} %}{{current_cp[1]}} {%- endif -%}                
+            {%- endfor -%}
+        {%- else %}{{reference}}
+        {%- endif -%}
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%} 
+    {% comment %} facts {% endcomment %}
+    {%- if dataset.dataset.facts -%},{% endif %}    
+    {% for fact in dataset.dataset.facts %}
+            {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
+            {{fact_split[-1]}}              
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}
+{{}}  
+{{}}    
+)
+
+SELECT DISTINCT
+{{}}  
+    {% comment %} cp {% endcomment %} 
+    {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+                    {%- for cp in connectionpoints -%}
+                        {%- assign current_cp = {{cp | split: '-'}} -%}
+                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}} == "INT"%}
+    ID as {{label_split[-1]}}
+                        {%- elsif label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}} != "INT"%}
+    randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
+                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}} != "INT"%}
+    randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+                        {%- endif -%} 
+                    {%- endfor -%}
+        {%- unless forloop.last %},
+    {% endunless -%}            
+        {%- endfor -%}  
+    {%- if dataset.dataset.attributes -%},{%- endif %}        
+    {%- endif -%}
+    {% comment %} attributes {% endcomment %}         
+    {%- for attribute in dataset.dataset.attributes -%}
+        {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
+        {%- for label in attribute.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+    {%- if label.label.dataType == "INT" -%} 
+    (random()*30)::INT as {{label_split[-1]}}
+    {%- elsif label.label.dataType != "INT" -%} 
+    randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+    {%- endif -%} 
+        {%- unless forloop.last -%},
+    {% endunless -%}            
+        {%- endfor -%}    
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}  
+    {% comment %} out table references {% endcomment %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
+    {%- for reference in dataset.dataset.references -%}
+        {%- assign reference_split = {{reference | split: "."}} -%}
+        {%- if reference_split[0] == "dataset" -%}
+            {%- for cp in connectionpoints -%}
+                {%- assign current_cp = {{cp | split: '-'}} -%}
+                {%- if reference_split[1] == {{current_cp[0]}} and {{current_cp[2]}} == "INT"-%} (random()*30)::INT as {{current_cp[1]}} 
+                {%- elsif reference_split[1] == {{current_cp[0]}} and {{current_cp[2]}} != "INT" -%}randomdata(30,'{{current_cp[1]}}',FALSE) as {{current_cp[1]}}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- else %}randomdate(now()-300,now() ) as {{reference}}
+        {%- endif -%}
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%} 
+    {% comment %} facts {% endcomment %}
+    {%- if dataset.dataset.facts -%},{% endif %}    
+    {% for fact in dataset.dataset.facts %}
+            {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
+            randomfact(10000,30000) as {{fact_split[-1]}}              
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor %}      
+    --,FALSE as _sys_is_deleted
+
+FROM
+    (SELECT ID
+     FROM tmp_generation_table
+     order by id
+{% comment %} {% endcomment %}
+{%- if {(dataset.dataset.facts.first)} -%}
+     limit {{number_of_lines_fact}}
+{%- else -%} 
+     limit {{number_of_lines_dimension}}
+{%- endif -%}
+) a ;
+
+{% endfor -%}
+
+
+{% comment %} populating connectionpoints array {% endcomment %}
+{%- assign connectionpoints = ''-%}
+{%- for dataset in model.projectModel.datasets -%}
+{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+            {%- if {{current_label == default_label  %}  
+                {%- assign connectionpoints = connectionpoints 
+                    | append: {{dataset_name}} | append: "-" 
+                    | append: {{label_split[-1]}} | append: "-" 
+                    | append: {{label.label.dataType}}| append: "," -%}                
+            {% endif -%}             
+        {%- endfor -%}   
+    {%- endif -%}
+{%- endfor -%} 
+{%- assign connectionpoints = connectionpoints | split: ',' -%}
+
+-----------------------------
+--- Dropping out views   ----
+-----------------------------
+{% for dataset in model.projectModel.datasets %}
+DROP VIEW IF EXISTS {{out_prefix}}vw_{{dataset.dataset.identifier | remove: "dataset." }};
+{%- endfor %}
+
+-------------------------------
+---- Creating out_vw_views ----
+-------------------------------
+{% for dataset in model.projectModel.datasets -%}
+{% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
+
+CREATE VIEW IF NOT EXISTS {{out_prefix}}vw_{{dataset_name}} AS
+SELECT
+    {% comment %} "cp__" has one? condition: first anchor attribute is not factof. Can this be ultimately checked from identifier? {% endcomment %} 
+    {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+        {%- assign is_cp = true -%}
+        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+            {{label_split[-1]}} AS 
+            {%- if {{current_label == default_label  %} cp__{{label_split[2]}}               
+           {%- else %} l
+                {%- for part in label_split -%}
+                    {%- if part != label_split[0] -%}
+                    __{{ part }}
+                    {%- endif -%}
+                {%- endfor -%}                 
+            {%- endif -%}
+        {%- unless forloop.last -%},
+    {% endunless -%}            
+        {%- endfor -%}
+    {%- if dataset.dataset.attributes -%},
+    {% endif %}      
+    {%- endif -%}
+    {% comment %} attributes {% endcomment %}         
+    {%- for attribute in dataset.dataset.attributes -%}
+        {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
+        {%- for label in attribute.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+            {{label_split[-1]}} AS 
+            {%- if {{current_label == default_label %} a
+                {%- for part in label_split -%}
+                    {%- if part != label_split[0] and part != {{dataset_name}} -%}
+                    __{{ part }}
+                    {%- endif -%}
+                {%- endfor -%}              
+            {%- else %} l
+                {%- for part in label_split -%}
+                    {%- if part != label_split[0] and part != {{dataset_name}} -%}
+                    __{{ part }}
+                    {%- endif -%}
+                {%- endfor -%}                 
+            {%- endif %}
+        {%- unless forloop.last -%},
+    {% endunless -%}            
+        {%- endfor -%}    
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}  
+    {% comment %} references in views {% endcomment %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}    
+    {%- for reference in dataset.dataset.references -%}
+        {%- assign reference_split = {{reference | split: "."}} -%}
+        {%- if reference_split[0] == "dataset" %}
+            {%- for cp in connectionpoints -%}
+                {%- assign current_cp = {{cp | split: '-'}} %}
+                {%- if reference_split[1] == {{current_cp[0]}} %}{{current_cp[1]}} AS r__{{reference_split[1]}}{%- endif -%}                
+            {%- endfor -%}
+        {%- else -%}{{reference}} AS d__{{reference}}
+        {%- endif -%}
+    {%- unless forloop.last -%},
+    {% endunless %}               
+    {%- endfor -%}
+    {% comment %} facts {% endcomment %}
+    {%- if dataset.dataset.facts -%},
+    {% endif %}    
+    {%- for fact in dataset.dataset.facts -%}
+            {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
+            {{fact_split[-1]}} AS f__{{fact_split[-1]}}                 
+    {%- unless forloop.last -%},
+    {% endunless -%}               
+    {%- endfor -%}
+{{}}
+-- ,   client_id VARCHAR(128) as x__client_id
+-- ,   _ x__timestamp TIMESTAMP ENCODING RLE
+-- ,    x__deleted BOOLEAN DEFAULT false ENCODING RLE    
+FROM {{out_prefix}}{{dataset_name}}
+;
+{%- endfor -%}
+
+
