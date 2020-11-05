@@ -1,970 +1,75 @@
 {
     "metaVersion": "1",
-    "project": "rk6vk3lskg6gz01185ks3ci6o55i8xoo",
-    "time": "2020-11-01 17:51:25",
+    "project": "ac9xm2xh6s09lkqj9zt2tzqic9wsld4h",
+    "time": "2020-11-05 16:24:11",
     "model": {
         "projectModel": {
             "datasets": [
                 {
                     "dataset": {
-                        "identifier": "dataset.di",
-                        "title": "DI",
+                        "identifier": "dataset.order",
+                        "title": "Order",
                         "anchor": {
                             "attribute": {
-                                "identifier": "attr.di.factsof",
-                                "title": "Records of DI",
-                                "folder": "DI",
-                                "grain": []
+                                "identifier": "attr.order.orderid",
+                                "title": "Order",
+                                "folder": "Order",
+                                "defaultLabel": "label.order.orderid",
+                                "labels": [
+                                    {
+                                        "label": {
+                                            "identifier": "label.order.orderid",
+                                            "title": "Order",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    }
+                                ]
                             }
                         },
-                        "attributes": [
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.iscp",
-                                    "title": "Is CP",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.iscp",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.iscp",
-                                                "title": "Is CP",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.iscp.cardpresence",
-                                                "title": "Card Presence",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.merchantgeo",
-                                    "title": "Merchant Geo",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.merchantgeo",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.merchantgeo",
-                                                "title": "Merchant Geo",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.merchantgeo.transactioncorridor",
-                                                "title": "Transaction Corridor",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.response",
-                                    "title": "Response",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.response",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.response",
-                                                "title": "Response",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.response.approvalindicator",
-                                                "title": "Approval Indicator",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.isfraud",
-                                    "title": "Is Fraud",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.isfraud",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.isfraud",
-                                                "title": "Is Fraud",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.isfraud.typeoffraud",
-                                                "title": "Type of Fraud",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.sourceindicator",
-                                    "title": "Source Indicator",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.sourceindicator",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.sourceindicator",
-                                                "title": "Source Indicator",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.segmentname",
-                                    "title": "Segment Name",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.segmentname",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.segmentname",
-                                                "title": "Segment Name",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.totalspendrankamount",
-                                    "title": "Total Spend Rank Amount",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.totalspendrankamount",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.totalspendrankamount",
-                                                "title": "Total Spend Rank Amount",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.totalspendrankamount.totalspendrankamountorder",
-                                                "title": "Total Spend Rank Amount Order",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.totalspendrankamount.totalspendrankamountorder",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.totalspendrankcount",
-                                    "title": "Total Spend Rank Count",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.totalspendrankcount",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.totalspendrankcount",
-                                                "title": "Total Spend Rank Count",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.totalspendrankcount.totalspendrankcountorder",
-                                                "title": "Total Spend Rank Count Order",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.totalspendrankcount.totalspendrankcountorder",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.segmentrankamount",
-                                    "title": "Segment Rank Amount",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.segmentrankamount",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.segmentrankamount",
-                                                "title": "Segment Rank Amount",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.segmentrankamount.segmentrankamountorder",
-                                                "title": "Segment Rank Amount Order",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.segmentrankamount.segmentrankamountorder",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.segmentrankcount",
-                                    "title": "Segment Rank Count",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.segmentrankcount",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.segmentrankcount",
-                                                "title": "Segment Rank Count",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.segmentrankcount.segmentrankcountorder",
-                                                "title": "Segment Rank Count Order",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.segmentrankcount.segmentrankcountorder",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.channelrankamount",
-                                    "title": "Channel Rank Amount",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.channelrankamount",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.channelrankamount",
-                                                "title": "Channel Rank Amount",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.channelrankamount.channelrankamountorder",
-                                                "title": "Channel Rank Amount Order",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.channelrankamount.channelrankamountorder",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.dti",
-                                    "title": "DTI Score",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.dti",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.dti",
-                                                "title": "DTI Score",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.rbiscore",
-                                    "title": "RBI Score",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.rbiscore",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.rbiscore",
-                                                "title": "RBI Score",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.merchantscore",
-                                    "title": "Merchant Score",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.merchantscore",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.merchantscore",
-                                                "title": "Merchant Score",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.transactioncategorycode",
-                                    "title": "Transaction Category Code",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.transactioncategorycode",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.transactioncategorycode",
-                                                "title": "Transaction Category Code",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.avsresponse",
-                                    "title": "AVS Response",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.avsresponse",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.avsresponse",
-                                                "title": "AVS Response",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.cvcresponse",
-                                    "title": "CVC Response",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.cvcresponse",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.cvcresponse",
-                                                "title": "CVC Response",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.issuingregion",
-                                    "title": "Region",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.issuingregion",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.issuingregion",
-                                                "title": "Region",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.interintra",
-                                    "title": "Bank Corridor",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.interintra",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.interintra",
-                                                "title": "Bank Corridor",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.ismoto",
-                                    "title": "Is MOTO",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.ismoto",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.ismoto",
-                                                "title": "Is MOTO",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.isrecurring",
-                                    "title": "Is Recurring",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.isrecurring",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.isrecurring",
-                                                "title": "Is Recurring",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.securecode",
-                                    "title": "Secure Code",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.securecode",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.securecode",
-                                                "title": "Secure Code",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.ismdes",
-                                    "title": "Is MDES",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.ismdes",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.ismdes",
-                                                "title": "Is MDES",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.channelrankcount",
-                                    "title": "Channel Rank Count",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.channelrankcount",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.channelrankcount",
-                                                "title": "Channel Rank Count",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.channelrankcount.channelrankcountorder",
-                                                "title": "Channel Rank Count Order",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.channelrankcount.channelrankcountorder",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.wallet",
-                                    "title": "Wallet",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.wallet",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.wallet",
-                                                "title": "Wallet",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.ischippresent",
-                                    "title": "Is Chip Present",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.ischippresent",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.ischippresent",
-                                                "title": "Is Chip Present",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.poschannel",
-                                    "title": "POS Channel",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.poschannel",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.poschannel",
-                                                "title": "POS Channel",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.dssecurecode",
-                                    "title": "3DS",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.dssecurecode",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.dssecurecode",
-                                                "title": "3DS",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.issuingcountry",
-                                    "title": "Country",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.issuingcountry",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.issuingcountry",
-                                                "title": "Country",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.competitorcountry",
-                                    "title": "Competitor Country",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.competitorcountry",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.competitorcountry",
-                                                "title": "Competitor Country",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.securecodeind",
-                                    "title": "Secure Code Indicator",
-                                    "folder": "DI",
-                                    "defaultLabel": "label.di.securecodeind",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.securecodeind",
-                                                "title": "Secure Code Indicator",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.segment",
-                                    "title": "Segment Code",
-                                    "folder": "DI",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.segmentlongname",
-                                                "title": "Segment Code",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.merchantstate",
-                                    "title": "Merchant State",
-                                    "folder": "DI",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.merchantstate",
-                                                "title": "Merchant State",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
                         "facts": [
                             {
                                 "fact": {
-                                    "identifier": "fact.di.amount",
-                                    "title": "Amount",
-                                    "folder": "DI",
-                                    "dataType": "DECIMAL(12,2)"
-                                }
-                            },
-                            {
-                                "fact": {
-                                    "identifier": "fact.di.count",
-                                    "title": "Count",
-                                    "folder": "DI",
-                                    "dataType": "INT"
-                                }
-                            },
-                            {
-                                "fact": {
-                                    "identifier": "fact.di.amountlw",
-                                    "title": "Amount LW",
-                                    "folder": "DI",
-                                    "dataType": "DECIMAL(12,2)"
-                                }
-                            },
-                            {
-                                "fact": {
-                                    "identifier": "fact.di.countlw",
-                                    "title": "Count LW",
-                                    "folder": "DI",
-                                    "dataType": "INT"
-                                }
-                            },
-                            {
-                                "fact": {
-                                    "identifier": "fact.di.amountlocalcurr",
-                                    "title": "Amount Local Curr",
-                                    "folder": "DI",
-                                    "dataType": "DECIMAL(12,2)"
-                                }
-                            },
-                            {
-                                "fact": {
-                                    "identifier": "fact.di.amountlocalcurrlw",
-                                    "title": "Amount Local Curr LW",
-                                    "folder": "DI",
+                                    "identifier": "fact.order.shippingcosts",
+                                    "title": "shipping costs",
+                                    "folder": "Order",
+                                    "description": "shipping costs",
                                     "dataType": "DECIMAL(12,2)"
                                 }
                             }
                         ],
                         "references": [
-                            "dataset.competitorica",
-                            "dataset.regionbenchmarkdisplay",
-                            "dataset.ica",
-                            "dataset.product",
-                            "dataset.discore",
-                            "dataset.countrybenchmarkdisplay",
-                            "dataset.merchant",
-                            "date"
+                            "dataset.customer",
+                            "dataset.salesmanager",
+                            "target",
+                            "ship"
                         ],
                         "production": true
                     }
                 },
                 {
                     "dataset": {
-                        "identifier": "dataset.competitorica",
-                        "title": "Competitor ICA",
+                        "identifier": "dataset.customer",
+                        "title": "Customer",
                         "anchor": {
                             "attribute": {
-                                "identifier": "attr.competitorica.competitorica",
-                                "title": "Competitor ICA",
-                                "folder": "Competitor ICA",
-                                "defaultLabel": "label.competitorica.competitorica",
+                                "identifier": "attr.customer.customerid",
+                                "title": "Customer",
+                                "folder": "Customer",
+                                "defaultLabel": "label.customer.customerid.customername",
                                 "labels": [
                                     {
                                         "label": {
-                                            "identifier": "label.competitorica.competitorica",
-                                            "title": "Competitor ICA",
-                                            "type": "GDC.text",
-                                            "dataType": "INT"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        "attributes": [
-                            {
-                                "attribute": {
-                                    "identifier": "attr.competitorica.iscitibank",
-                                    "title": "Is Citibank",
-                                    "folder": "Competitor ICA",
-                                    "defaultLabel": "label.competitorica.iscitibank",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.competitorica.iscitibank",
-                                                "title": "Is Citibank",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
-                        "production": true
-                    }
-                },
-                {
-                    "dataset": {
-                        "identifier": "dataset.userfilters",
-                        "title": "User Filters",
-                        "anchor": {
-                            "attribute": {
-                                "identifier": "attr.userfilters.icauserfilters",
-                                "title": "ICA (User Filters)",
-                                "folder": "User Filters",
-                                "defaultLabel": "label.userfilters.icauserfilters",
-                                "labels": [
-                                    {
-                                        "label": {
-                                            "identifier": "label.userfilters.icauserfilters",
-                                            "title": "ICA (User Filters)",
+                                            "identifier": "label.customer.customerid.customername",
+                                            "title": "Customer Name",
                                             "type": "GDC.text",
                                             "dataType": "VARCHAR(128)"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        "attributes": [
-                            {
-                                "attribute": {
-                                    "identifier": "attr.userfilters.ciduserfilters",
-                                    "title": "CID (User Filters)",
-                                    "folder": "User Filters",
-                                    "defaultLabel": "label.userfilters.ciduserfilters",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.userfilters.ciduserfilters",
-                                                "title": "CID (User Filters)",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.userfilters.competitorica",
-                                    "title": "Competitor ICA",
-                                    "folder": "User Filters",
-                                    "defaultLabel": "label.userfilters.competitorica",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.userfilters.competitorica",
-                                                "title": "Competitor ICA",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.userfilters.iscitibank",
-                                    "title": "Is Citibank",
-                                    "folder": "User Filters",
-                                    "defaultLabel": "label.userfilters.iscitibank",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.userfilters.iscitibank",
-                                                "title": "Is Citibank",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
-                        "production": true
-                    }
-                },
-                {
-                    "dataset": {
-                        "identifier": "dataset.regionbenchmarkdisplay",
-                        "title": "Region Benchmark Display",
-                        "anchor": {
-                            "attribute": {
-                                "identifier": "attr.regionbenchmarkdisplay.regionbenchmarkdisplayflag",
-                                "title": "Region Benchmark Display Flag",
-                                "folder": "Region Benchmark Display",
-                                "defaultLabel": "label.regionbenchmarkdisplay.regionbenchmarkdisplayflag",
-                                "labels": [
-                                    {
-                                        "label": {
-                                            "identifier": "label.regionbenchmarkdisplay.regionbenchmarkdisplayflag",
-                                            "title": "Region Benchmark Display Flag",
-                                            "type": "GDC.text",
-                                            "dataType": "VARCHAR(128)"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        "production": true
-                    }
-                },
-                {
-                    "dataset": {
-                        "identifier": "dataset.ica",
-                        "title": "ICA",
-                        "description": "ICA",
-                        "anchor": {
-                            "attribute": {
-                                "identifier": "attr.di.ica",
-                                "title": "ICA",
-                                "folder": "ICA",
-                                "defaultLabel": "label.di.ica",
-                                "labels": [
-                                    {
-                                        "label": {
-                                            "identifier": "label.di.ica",
-                                            "title": "ICA",
-                                            "type": "GDC.text",
-                                            "dataType": "INT"
                                         }
                                     },
                                     {
                                         "label": {
-                                            "identifier": "label.di.ica.icacodename",
-                                            "title": "ICA Code + Name",
+                                            "identifier": "label.customer.customerid",
+                                            "title": "CustomerID",
                                             "type": "GDC.text",
                                             "dataType": "VARCHAR(128)"
                                         }
@@ -975,33 +80,17 @@
                         "attributes": [
                             {
                                 "attribute": {
-                                    "identifier": "attr.di.cid",
-                                    "title": "CID",
-                                    "folder": "ICA",
-                                    "defaultLabel": "label.di.cid.cidcodename",
+                                    "identifier": "attr.customer.country",
+                                    "title": "Country",
+                                    "description": "Country",
+                                    "folder": "Customer",
                                     "labels": [
                                         {
                                             "label": {
-                                                "identifier": "label.di.cid.cidcodename",
-                                                "title": "CID Code + Name",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(512)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.cid",
-                                                "title": "CID",
+                                                "identifier": "label.customer.country",
+                                                "title": "Country",
                                                 "type": "GDC.text",
                                                 "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.cid.cidname",
-                                                "title": "CID Name",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(512)"
                                             }
                                         }
                                     ]
@@ -1018,18 +107,26 @@
                         "description": "Product",
                         "anchor": {
                             "attribute": {
-                                "identifier": "attr.product.productid",
-                                "title": "Product ID",
-                                "description": "Product ID",
+                                "identifier": "attr.product.product",
+                                "title": "Product",
+                                "description": "Product",
                                 "folder": "Product",
-                                "defaultLabel": "label.product.productid",
+                                "defaultLabel": "label.product.product.productname",
                                 "labels": [
                                     {
                                         "label": {
-                                            "identifier": "label.product.productid",
-                                            "title": "Product ID",
+                                            "identifier": "label.product.product.productname",
+                                            "title": "Product Name",
                                             "type": "GDC.text",
-                                            "dataType": "INT"
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    },
+                                    {
+                                        "label": {
+                                            "identifier": "label.product.product",
+                                            "title": "Product",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
                                         }
                                     }
                                 ]
@@ -1038,32 +135,14 @@
                         "attributes": [
                             {
                                 "attribute": {
-                                    "identifier": "attr.di.productgroupname",
-                                    "title": "Product Group",
-                                    "folder": "Product",
-                                    "defaultLabel": "label.di.productgroupname",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.productgroupname",
-                                                "title": "Product Group",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.producttypename",
+                                    "identifier": "attr.product.producttype",
                                     "title": "Product Type",
+                                    "description": "Product Type",
                                     "folder": "Product",
-                                    "defaultLabel": "label.di.producttypename",
                                     "labels": [
                                         {
                                             "label": {
-                                                "identifier": "label.di.producttypename",
+                                                "identifier": "label.product.producttype",
                                                 "title": "Product Type",
                                                 "type": "GDC.text",
                                                 "dataType": "VARCHAR(128)"
@@ -1071,22 +150,16 @@
                                         }
                                     ]
                                 }
-                            },
+                            }
+                        ],
+                        "facts": [
                             {
-                                "attribute": {
-                                    "identifier": "attr.product.creditdebit",
-                                    "title": "Credit Debit Indicator",
+                                "fact": {
+                                    "identifier": "fact.product.unitpriceusd",
+                                    "title": "Unit Price USD",
                                     "folder": "Product",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.product.creditdebit",
-                                                "title": "Credit Debit Indicator",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
+                                    "description": "Unit Price USD",
+                                    "dataType": "DECIMAL(12,2)"
                                 }
                             }
                         ],
@@ -1095,147 +168,77 @@
                 },
                 {
                     "dataset": {
-                        "identifier": "dataset.discore",
-                        "title": "DI Score",
-                        "description": "DI Score",
+                        "identifier": "dataset.orderline",
+                        "title": "Order Line",
+                        "description": "Order Line",
                         "anchor": {
                             "attribute": {
-                                "identifier": "attr.discore.discore",
-                                "title": "DI Score",
-                                "description": "DI Score",
-                                "folder": "DI Score",
-                                "defaultLabel": "label.discore.discore",
-                                "labels": [
+                                "identifier": "attr.orderline.factsof",
+                                "title": "Records of Order Line",
+                                "description": "Records of Order Line",
+                                "folder": "Order Line",
+                                "grain": [
                                     {
-                                        "label": {
-                                            "identifier": "label.discore.discore",
-                                            "title": "DI Score",
-                                            "type": "GDC.text",
-                                            "dataType": "INT"
-                                        }
+                                        "attribute": "attr.order.orderid"
+                                    },
+                                    {
+                                        "attribute": "attr.product.product"
                                     }
                                 ]
                             }
                         },
-                        "attributes": [
+                        "facts": [
                             {
-                                "attribute": {
-                                    "identifier": "attr.di.discore200",
-                                    "title": "DI Score 200",
-                                    "folder": "DI Score",
-                                    "defaultLabel": "label.di.discore200",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.discore200",
-                                                "title": "DI Score 200",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.discore200.discore200order",
-                                                "title": "DI Score 200 Order",
-                                                "type": "GDC.text",
-                                                "dataType": "INT"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.discore200.discore200order",
-                                            "direction": "ASC"
-                                        }
-                                    }
+                                "fact": {
+                                    "identifier": "fact.orderline.itemssold",
+                                    "title": "Items Sold",
+                                    "folder": "Order Line",
+                                    "description": "Items Sold",
+                                    "dataType": "DECIMAL(12,2)"
                                 }
                             },
                             {
-                                "attribute": {
-                                    "identifier": "attr.di.discore100",
-                                    "title": "DI Score 100",
-                                    "folder": "DI Score",
-                                    "defaultLabel": "label.di.discore100",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.discore100",
-                                                "title": "DI Score 100",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.discore.discore100.discore100order",
-                                                "title": "DI Score 100 Order",
-                                                "type": "GDC.text",
-                                                "dataType": "INT"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.discore.discore100.discore100order",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.discore.discore50",
-                                    "title": "DI Score 50",
-                                    "description": "DI Score 50",
-                                    "folder": "DI Score",
-                                    "defaultLabel": "label.discore.discore50",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.discore.discore50",
-                                                "title": "DI Score 50",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.discore.discore50.discore50order",
-                                                "title": "DI Score 50 Order",
-                                                "type": "GDC.text",
-                                                "dataType": "INT"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.discore.discore50.discore50order",
-                                            "direction": "ASC"
-                                        }
-                                    }
+                                "fact": {
+                                    "identifier": "fact.orderline.orderlinerevenue",
+                                    "title": "Order Line Revenue",
+                                    "folder": "Order Line",
+                                    "description": "Order Line Revenue",
+                                    "dataType": "DECIMAL(12,2)"
                                 }
                             }
+                        ],
+                        "references": [
+                            "dataset.order",
+                            "dataset.product"
                         ],
                         "production": true
                     }
                 },
                 {
                     "dataset": {
-                        "identifier": "dataset.countrybenchmarkdisplay",
-                        "title": "Country Benchmark Display",
-                        "description": "Country Benchmark Display",
+                        "identifier": "dataset.salesmanager",
+                        "title": "Sales Manager",
+                        "description": "Sales Manager",
                         "anchor": {
                             "attribute": {
-                                "identifier": "attr.countrybenchmarkdisplay.countrybenchmarkdisplayflag",
-                                "title": "Country Benchmark Display Flag",
-                                "description": "Country Benchmark Display Flag",
-                                "folder": "Country Benchmark Display",
-                                "defaultLabel": "label.countrybenchmarkdisplay.countrybenchmarkdisplayflag",
+                                "identifier": "attr.salesmanager.salesmanager",
+                                "title": "Sales Manager",
+                                "description": "Sales Manager",
+                                "folder": "Sales Manager",
+                                "defaultLabel": "label.salesmanager.salesmanager.salesmanagername",
                                 "labels": [
                                     {
                                         "label": {
-                                            "identifier": "label.countrybenchmarkdisplay.countrybenchmarkdisplayflag",
-                                            "title": "Country Benchmark Display Flag",
+                                            "identifier": "label.salesmanager.salesmanager.salesmanagername",
+                                            "title": "Sales Manager Name",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    },
+                                    {
+                                        "label": {
+                                            "identifier": "label.salesmanager.salesmanager",
+                                            "title": "Sales Manager",
                                             "type": "GDC.text",
                                             "dataType": "VARCHAR(128)"
                                         }
@@ -1243,84 +246,6 @@
                                 ]
                             }
                         },
-                        "production": true
-                    }
-                },
-                {
-                    "dataset": {
-                        "identifier": "dataset.merchant",
-                        "title": "Merchant",
-                        "description": "Merchant",
-                        "anchor": {
-                            "attribute": {
-                                "identifier": "attr.di.merchantcountry",
-                                "title": "Merchant Country Code",
-                                "folder": "Merchant",
-                                "defaultLabel": "label.di.merchantcountry",
-                                "labels": [
-                                    {
-                                        "label": {
-                                            "identifier": "label.di.merchantcountry",
-                                            "title": "Merchant Country Code",
-                                            "type": "GDC.text",
-                                            "dataType": "VARCHAR(128)"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        "attributes": [
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.merchantregion",
-                                    "title": "Merchant Region Name",
-                                    "folder": "Merchant",
-                                    "defaultLabel": "label.di.merchantregion",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.merchantregion",
-                                                "title": "Merchant Region Name",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        },
-                                        {
-                                            "label": {
-                                                "identifier": "label.di.merchantregion.merchantregioncodename",
-                                                "title": "Merchant Region Code + Name",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ],
-                                    "sortOrder": {
-                                        "attributeSortOrder": {
-                                            "label": "label.di.merchantregion.merchantregioncodename",
-                                            "direction": "ASC"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "attribute": {
-                                    "identifier": "attr.di.merchantcountryname",
-                                    "title": "Merchant Country Name",
-                                    "folder": "Merchant",
-                                    "defaultLabel": "label.merchant.merchantcountry",
-                                    "labels": [
-                                        {
-                                            "label": {
-                                                "identifier": "label.merchant.merchantcountry",
-                                                "title": "Merchant Country Name",
-                                                "type": "GDC.text",
-                                                "dataType": "VARCHAR(128)"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
                         "production": true
                     }
                 }
@@ -1328,10 +253,21 @@
             "dateDimensions": [
                 {
                     "dateDimension": {
-                        "identifier": "date.dataset.dt",
-                        "identifierPrefix": "date",
-                        "name": "date",
-                        "title": "Period",
+                        "identifier": "target.dataset.dt",
+                        "identifierPrefix": "target",
+                        "name": "target",
+                        "title": "Sales Date",
+                        "urn": "urn:gooddata:date",
+                        "bridges": [],
+                        "production": true
+                    }
+                },
+                {
+                    "dateDimension": {
+                        "identifier": "ship.dataset.dt",
+                        "identifierPrefix": "ship",
+                        "name": "ship",
+                        "title": "Shipment Date",
                         "urn": "urn:gooddata:date",
                         "bridges": [],
                         "production": true
@@ -1348,47 +284,20 @@
             {
                 "identifier": {
                     "type": "dataset",
-                    "id": "dataset.di"
+                    "id": "dataset.order"
                 },
                 "collapse": false,
-                "x": 503,
-                "y": 405
+                "x": 350,
+                "y": 253
             },
             {
                 "identifier": {
                     "type": "dataset",
-                    "id": "dataset.competitorica"
+                    "id": "dataset.customer"
                 },
                 "collapse": false,
-                "x": 143.8258819580078,
+                "x": 100,
                 "y": 100
-            },
-            {
-                "identifier": {
-                    "type": "dataset",
-                    "id": "dataset.userfilters"
-                },
-                "collapse": false,
-                "x": 143.8258819580078,
-                "y": 1722
-            },
-            {
-                "identifier": {
-                    "type": "dataset",
-                    "id": "dataset.regionbenchmarkdisplay"
-                },
-                "collapse": false,
-                "x": 102.99600219726562,
-                "y": 307
-            },
-            {
-                "identifier": {
-                    "type": "dataset",
-                    "id": "dataset.ica"
-                },
-                "collapse": false,
-                "x": 143.8258819580078,
-                "y": 488
             },
             {
                 "identifier": {
@@ -1396,45 +305,45 @@
                     "id": "dataset.product"
                 },
                 "collapse": false,
-                "x": 133.57898712158203,
-                "y": 695
+                "x": 350,
+                "y": 632
             },
             {
                 "identifier": {
                     "type": "dataset",
-                    "id": "dataset.discore"
+                    "id": "dataset.orderline"
                 },
                 "collapse": false,
-                "x": 143.8258819580078,
-                "y": 954
+                "x": 600,
+                "y": 359
             },
             {
                 "identifier": {
                     "type": "dataset",
-                    "id": "dataset.countrybenchmarkdisplay"
+                    "id": "dataset.salesmanager"
                 },
                 "collapse": false,
                 "x": 100,
-                "y": 1213
-            },
-            {
-                "identifier": {
-                    "type": "dataset",
-                    "id": "dataset.merchant"
-                },
-                "collapse": false,
-                "x": 124.49295043945312,
-                "y": 1394
+                "y": 307
             },
             {
                 "identifier": {
                     "type": "templateDataset",
-                    "id": "date"
+                    "id": "target"
                 },
                 "collapse": true,
-                "x": 166.3258819580078,
-                "y": 1627
+                "x": 122.5,
+                "y": 488
+            },
+            {
+                "identifier": {
+                    "type": "templateDataset",
+                    "id": "ship"
+                },
+                "collapse": true,
+                "x": 122.5,
+                "y": 583
             }
         ]
     }
-}	
+}

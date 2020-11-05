@@ -76,8 +76,8 @@ DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "datas
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
 ---- Creating {{out_prefix}}{{dataset_name}} ----
-
-{%- if dataset_name == 'di' %}
+{{}}
+{%- if dataset_name == 'product' -%}
 
 CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
 {{}}
@@ -90,9 +90,10 @@ CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
             {%- assign label_split = {{current_label | split: "."}} -%}
     {{label_split[-1]}} {{label.label.dataType}}
         {%- unless forloop.last -%},
-        {% endunless -%}            
+    {% endunless -%}            
         {%- endfor -%}
-    {%- if dataset.dataset.attributes -%},{%- endif %}      
+    {%- if dataset.dataset.attributes -%},
+    {% endif %}      
     {%- endif -%}
     {% comment %} attributes {% endcomment %}         
     {%- for attribute in dataset.dataset.attributes -%}
@@ -149,7 +150,8 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
         {%- unless forloop.last -%},
     {% endunless -%}            
         {%- endfor -%}
-    {%- if dataset.dataset.attributes -%},{%- endif %}      
+    {%- if dataset.dataset.attributes -%},
+    {% endif %}      
     {%- endif -%}
     {% comment %} attributes {% endcomment %}         
     {%- for attribute in dataset.dataset.attributes -%}
@@ -180,14 +182,14 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
     {% endunless -%}               
     {%- endfor -%} 
     {% comment %} facts {% endcomment %}
-    {%- if dataset.dataset.facts -%},{% endif %}    
-    {% for fact in dataset.dataset.facts %}
+    {%- if dataset.dataset.facts -%},
+    {% endif %}    
+    {%- for fact in dataset.dataset.facts -%}
             {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
             {{fact_split[-1]}}              
     {%- unless forloop.last -%},
     {% endunless -%}               
     {%- endfor -%}
-{{}}  
 {{}}    
 )
 
@@ -201,16 +203,15 @@ SELECT DISTINCT
             {%- assign label_split = {{current_label | split: "."}} -%}
                     {%- for cp in connectionpoints -%}
                         {%- assign current_cp = {{cp | split: '-'}} -%}
-                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}
-    randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
-                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}
-    randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
+                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
                         {%- endif -%} 
                     {%- endfor -%}
-        {%- unless forloop.last %},
+        {%- unless forloop.last -%},
     {% endunless -%}            
         {%- endfor -%}  
-    {%- if dataset.dataset.attributes -%},{%- endif %}        
+    {%- if dataset.dataset.attributes -%},
+    {% endif %}        
     {%- endif -%}
     {% comment %} attributes {% endcomment %}         
     {%- for attribute in dataset.dataset.attributes -%}
@@ -242,7 +243,7 @@ SELECT DISTINCT
     {%- endfor -%} 
     {% comment %} facts {% endcomment %}
     {%- if dataset.dataset.facts -%},{% endif %}    
-    {% for fact in dataset.dataset.facts %}
+    {%- for fact in dataset.dataset.facts -%}
             {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
             randomfact(10000,30000) as {{fact_split[-1]}}              
     {%- unless forloop.last -%},
