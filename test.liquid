@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS tmp_generation_table;
 CREATE TABLE tmp_generation_table
 (
 ID INT
-)
+);
 
 INSERT INTO tmp_generation_table 
 
@@ -39,15 +39,6 @@ BEGIN
         ELSE maximum END;
 END;
 
-{%-assign out_prefix = "out_test_" %}
-
------------------------------
---- Dropping out tables  ----
------------------------------ 
-{%- for dataset in model.projectModel.datasets %}
-DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
-{%- endfor %}
-
 
 {% comment %} populating connectionpoints array {% endcomment %}
 {%- assign connectionpoints = ''-%}
@@ -69,46 +60,56 @@ DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "datas
 {%- endfor -%} 
 {%- assign connectionpoints = connectionpoints | split: ',' %}
 
+{%-assign out_prefix = "out_test_" %}
+
+-----------------------------
+ Dropping {{out_prefix}} tables  
+----------------------------- 
+{%- for dataset in model.projectModel.datasets %}
+DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
+{%- endfor %}
 
 ------------------------------
----- Creating {{out_prefix}} tables ----
+ Creating {{out_prefix}} tables 
 ------------------------------
-{% for dataset in model.projectModel.datasets -%}
-{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
+{% for dataset in model.projectModel.datasets %}
+{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
 ---- Creating {{out_prefix}}{{dataset_name}} ----
 
-CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
+{%- if dataset_name == 'di' %}
 
-    {% comment %} "cp__" has one? condition: first anchor attribute is not factof. Can this be ultimately checked from identifier? {% endcomment %} 
+CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
+{{}}
+    {% comment %} cp {% endcomment %} 
     {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
     {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
-        {%- assign is_cp = true -%}
         {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-{{label_split[-1]}} {{label.label.dataType}}
-        {% unless forloop.last %},
+    {{label_split[-1]}} {{label.label.dataType}}
+        {%- unless forloop.last -%},
         {% endunless -%}            
         {%- endfor -%}
     {%- if dataset.dataset.attributes -%},{%- endif %}      
-    {% endif -%}
+    {%- endif -%}
     {% comment %} attributes {% endcomment %}         
     {%- for attribute in dataset.dataset.attributes -%}
-        {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
         {%- for label in attribute.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-{{label_split[-1]}} {{label.label.dataType}}
+    {{label_split[-1]}} {{label.label.dataType}}
         {%- unless forloop.last -%},
-        {%- endunless -%}            
+    {% endunless -%}            
         {%- endfor -%}    
     {%- unless forloop.last -%},
     {% endunless -%}               
     {%- endfor -%}  
-    {% comment %} out table references {% endcomment %}
-    {% for reference in dataset.dataset.references %}
+    {% comment %} references {% endcomment %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
+    {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
         {%- if reference_split[0] == "dataset" -%}
             {%- for cp in connectionpoints -%}
@@ -121,48 +122,52 @@ CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
     {% endunless -%}               
     {%- endfor -%} 
     {% comment %} facts {% endcomment %}
-    {%- if dataset.dataset.facts -%},{% endif %}    
-    {% for fact in dataset.dataset.facts %}
+    {%- if dataset.dataset.facts -%},
+    {% endif %}        
+    {%- for fact in dataset.dataset.facts -%}
             {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
-            {{fact_split[-1]}} {{fact.fact.dataType}}              
+            {{fact_split[-1]}} {{fact.fact.dataType}}             
     {%- unless forloop.last -%},
     {% endunless -%}               
-    {%- endfor %}      
+    {%- endfor -%}     
+{{}}
+{{}} {% comment %} kudrlinky pro Michala {% endcomment %}     
 );
 
 ---- Inserting Data to {{out_prefix}}{{dataset_name}} ----
 
 INSERT INTO {{out_prefix}}{{dataset_name}} (
-
-    {% comment %} "cp__" has one? condition: first anchor attribute is not factof. Can this be ultimately checked from identifier? {% endcomment %} 
+{{}}    
+    {% comment %} cp {% endcomment %} 
     {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
     {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
-        {%- assign is_cp = true -%}
         {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-{{label_split[-1]}} 
-        {%- unless forloop.last %},
-        {% endunless -%}            
+    {{label_split[-1]}} 
+        {%- unless forloop.last -%},
+    {% endunless -%}            
         {%- endfor -%}
     {%- if dataset.dataset.attributes -%},{%- endif %}      
-    {% endif -%}
+    {%- endif -%}
     {% comment %} attributes {% endcomment %}         
     {%- for attribute in dataset.dataset.attributes -%}
         {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
         {%- for label in attribute.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-{{label_split[-1]}} 
+    {{label_split[-1]}} 
         {%- unless forloop.last -%},
-        {%- endunless -%}            
+    {% endunless -%}            
         {%- endfor -%}    
     {%- unless forloop.last -%},
     {% endunless -%}               
-    {%- endfor -%}  
-    {% comment %} out table references {% endcomment %}
-    {% for reference in dataset.dataset.references %}
+    {%- endfor -%}         
+    {% comment %} references {% endcomment %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}      
+    {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
         {%- if reference_split[0] == "dataset" -%}
             {%- for cp in connectionpoints -%}
@@ -181,52 +186,54 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
             {{fact_split[-1]}}              
     {%- unless forloop.last -%},
     {% endunless -%}               
-    {%- endfor %}
+    {%- endfor -%}
+{{}}  
+{{}}    
 )
 
 SELECT DISTINCT
-
-    {% comment %} "cp__" has one? condition: first anchor attribute is not factof. Can this be ultimately checked from identifier? {% endcomment %} 
+{{}}  
+    {% comment %} cp {% endcomment %} 
     {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
     {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
-        {%- assign is_cp = true -%}
-        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
                     {%- for cp in connectionpoints -%}
                         {%- assign current_cp = {{cp | split: '-'}} -%}
                         {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}
-randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
+    randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
                         {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}
-randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+    randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
                         {%- endif -%} 
                     {%- endfor -%}
         {%- unless forloop.last %},
-        {% endunless -%}            
-        {%- endfor -%}
-    {%- if dataset.dataset.attributes -%},{%- endif %}      
-    {% endif -%}
+    {% endunless -%}            
+        {%- endfor -%}  
+    {%- if dataset.dataset.attributes -%},{%- endif %}        
+    {%- endif -%}
     {% comment %} attributes {% endcomment %}         
     {%- for attribute in dataset.dataset.attributes -%}
         {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
         {%- for label in attribute.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+    randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
         {%- unless forloop.last -%},
-        {%- endunless -%}            
+    {% endunless -%}            
         {%- endfor -%}    
     {%- unless forloop.last -%},
     {% endunless -%}               
     {%- endfor -%}  
     {% comment %} out table references {% endcomment %}
-    {% for reference in dataset.dataset.references %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
+    {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
         {%- if reference_split[0] == "dataset" -%}
             {%- for cp in connectionpoints -%}
                 {%- assign current_cp = {{cp | split: '-'}} -%}
-                {%- if reference_split[1] == {{current_cp[0]}} %}randomdata(30,'{{current_cp[1]}}',FALSE)  as {{current_cp[1]}} {%- endif -%}                
+                {%- if reference_split[1] == {{current_cp[0]}} %}randomdata(30,'{{current_cp[1]}}',FALSE) as {{current_cp[1]}} {%- endif -%}                
             {%- endfor -%}
         {%- else %}randomdate(now()-300,now() ) as {{reference}}
         {%- endif -%}
@@ -254,5 +261,7 @@ FROM
      limit 50
 {%- endif -%}
 ) a ;
+
+{%- endif -%}
 
 {% endfor -%}

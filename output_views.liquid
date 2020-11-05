@@ -18,17 +18,19 @@
 {%- endfor -%} 
 {%- assign connectionpoints = connectionpoints | split: ',' -%}
 
+{%- assign out_prefix = "out_test_" -%}
+
 -----------------------------
 --- Dropping out views   ----
 -----------------------------
-{%- for dataset in model.projectModel.datasets %}
+{% for dataset in model.projectModel.datasets %}
 DROP VIEW IF EXISTS {{out_prefix}}vw_{{dataset.dataset.identifier | remove: "dataset." }};
-{%- endfor -%}
+{%- endfor %}
 
 -------------------------------
 ---- Creating out_vw_views ----
 -------------------------------
-{% for dataset in model.projectModel.datasets %}
+{% for dataset in model.projectModel.datasets -%}
 {% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
 CREATE VIEW IF NOT EXISTS {{out_prefix}}vw_{{dataset_name}} AS
@@ -102,12 +104,7 @@ SELECT
     {% endif %}    
     {%- for fact in dataset.dataset.facts -%}
             {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
-            {{fact_split[-1]}} AS f
-                {%- for part in fact_split -%}
-                    {%- if part != fact_split[0] -%}
-                    __{{ part }}
-                    {%- endif -%}
-                {%- endfor -%}                  
+            {{fact_split[-1]}} AS f__{{fact_split[-1]}}                 
     {%- unless forloop.last -%},
     {% endunless -%}               
     {%- endfor -%}
