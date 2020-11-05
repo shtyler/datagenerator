@@ -117,7 +117,8 @@ SELECT
             {%- assign label_split = {{current_label | split: "."}} -%}
             {{label_split[-1]}} AS 
             {%- if {{current_label == default_label %} a__{{label_split[-1]}}
-            {% comment %} TODO how to check nil value?? {% endcomment %}	    
+            {% comment %} TODO how to check nil value?? cases where efaultlabel is missing{% endcomment %}	
+            {% comment %} TODO treat cases when attr was transfered from other dataset and have old prefix{% endcomment %}	             
             {%- elsif {{default_label == empty %} a__{{label_split[-1]}}
             {%- else %} l
                 {%- for part in label_split -%}
