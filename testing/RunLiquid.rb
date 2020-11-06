@@ -10,9 +10,9 @@ parameters_path = ARGV[1]
 
 #template_path = gets.strip
 
-template_path = 'output_stage.liquid'
+template_path = 'output_views.liquid'
 
-parameters_path = 'di_model.json'
+parameters_path = '../param_definitions/LDM_geo.json'
 
 template = Liquid::Template.parse(File.read(template_path))
 

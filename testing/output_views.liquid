@@ -36,7 +36,7 @@ DROP VIEW IF EXISTS {{out_prefix}}vw_{{dataset.dataset.identifier | remove: "dat
 {% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
 
-CREATE VIEW IF NOT EXISTS {{out_prefix}}vw_{{dataset_name}} AS
+CREATE OR REPLACE VIEW {{out_prefix}}vw_{{dataset_name}} AS
 SELECT
     {% comment %} cp {% endcomment %}
     {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}							
