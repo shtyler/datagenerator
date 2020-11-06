@@ -1,6 +1,6 @@
------------------------------
----    Temporary tables  ----
------------------------------
+---------------------------------------------------------------------
+---> Temporary tables  
+---------------------------------------------------------------------
 DROP TABLE IF EXISTS tmp_generation_table;
 CREATE TABLE tmp_generation_table
 (
@@ -15,9 +15,9 @@ CROSS JOIN system_tables l
 
 limit 2000
 ;
------------------------------
----    Random functions  ----
------------------------------
+---------------------------------------------------------------------
+---> Random functions   
+---------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION randomdate (d1 TIMESTAMP, d2 TIMESTAMP) RETURN DATE
 AS
 BEGIN
@@ -65,21 +65,20 @@ END;
 
 {%-assign out_prefix = "out_test_" %}
 
------------------------------
--- Dropping {{out_prefix}} tables  
------------------------------ 
+---------------------------------------------------------------------
+---> Dropping {{out_prefix}} tables  
+--------------------------------------------------------------------- 
 {%- for dataset in model.projectModel.datasets %}
 DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
 {%- endfor %}
 
-------------------------------
--- Creating {{out_prefix}} tables 
-------------------------------
+---------------------------------------------------------------------
+---> Creating {{out_prefix}} tables 
+---------------------------------------------------------------------
 {% for dataset in model.projectModel.datasets %}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
 ---- Creating {{out_prefix}}{{dataset_name}} ----
-
 
 CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
 {{}}
@@ -112,7 +111,7 @@ CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
         {% comment %} references {% endcomment %}
         {%- if dataset.dataset.references -%},
         {% endif %}
-    {% endif %}
+    {%- endif %}
     {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
         {%- if reference_split[0] == "dataset" -%}
