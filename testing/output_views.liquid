@@ -1,37 +1,13 @@
-{% comment %} populating connectionpoints array {% endcomment %}
-{%- assign connectionpoints = ''-%}
-{%- for dataset in model.projectModel.datasets -%}
-{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
-    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}	
-        {%- assign attribute_split = {{dataset.dataset.anchor.attribute.identifier}} | split: "." -%}
-        {%- assign default_attribute = {{attribute_split[1]}} | append: "." | append: {{attribute_split[2]}} -%}    
-        {%- for label in dataset.dataset.anchor.attribute.labels -%}
-            {%- assign current_label = {{label.label.identifier}} -%}
-            {%- assign label_split = {{current_label | split: "."}} -%}
-            {%- assign default_label = {{label_split[-2]}} | append: "." | append: {{label_split[-1]}} -%}
-            {%- if {{default_attribute == default_label  %}  
-                {%- assign connectionpoints = connectionpoints 
-                    | append: {{dataset_name}} | append: "-" 
-                    | append: {{label_split[-1]}} | append: "-" 
-                    | append: {{label.label.dataType}}| append: "," -%}                
-            {% endif -%}             
-        {%- endfor -%}   
-    {%- endif -%}
-{%- endfor -%} 
-{%- assign connectionpoints = connectionpoints | split: ',' -%}
-
-{%- assign out_prefix = "out_test_" -%}
-
------------------------------
---- Dropping out views   ----
------------------------------
+---------------------------------------------------------------------
+---> Dropping out views   
+---------------------------------------------------------------------
 {% for dataset in model.projectModel.datasets %}
 DROP VIEW IF EXISTS {{out_prefix}}vw_{{dataset.dataset.identifier | remove: "dataset." }};
 {%- endfor %}
 
--------------------------------
----- Creating out_vw_views ----
--------------------------------
+---------------------------------------------------------------------
+---> Creating out_vw_views 
+---------------------------------------------------------------------
 {% for dataset in model.projectModel.datasets -%}
 {% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
@@ -112,12 +88,11 @@ SELECT
     {% endunless -%}               
     {%- endfor -%}
 {{}}
--- ,    x__client_id VARCHAR(128) ENCODING RLE
--- ,    x__timestamp TIMESTAMP ENCODING RLE
--- ,    x__deleted BOOLEAN DEFAULT false ENCODING RLE    
-FROM out_{{dataset_name}}
+-- , client_id AS x__client_id
+-- , _sys_updated_at AS x__timestamp
+-- , _sys_is_deleted AS x__deleted
+FROM {{out_prefix}}{{dataset_name}}
 ;
-
 
 {%- endfor -%}
 
