@@ -1,0 +1,375 @@
+{
+    "metaVersion": "1",
+    "project": "ac9xm2xh6s09lkqj9zt2tzqic9wsld4h",
+    "time": "2020-11-05 22:50:11",
+    "model": {
+        "projectModel": {
+            "datasets": [
+                {
+                    "dataset": {
+                        "identifier": "dataset.order",
+                        "title": "Order",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.order.orderid",
+                                "title": "Order",
+                                "folder": "Order",
+                                "defaultLabel": "label.order.orderid",
+                                "labels": [
+                                    {
+                                        "label": {
+                                            "identifier": "label.order.orderid",
+                                            "title": "Order",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "facts": [
+                            {
+                                "fact": {
+                                    "identifier": "fact.order.shippingcosts",
+                                    "title": "shipping costs",
+                                    "folder": "Order",
+                                    "description": "shipping costs",
+                                    "dataType": "DECIMAL(12,2)"
+                                }
+                            }
+                        ],
+                        "references": [
+                            "dataset.customer",
+                            "target",
+                            "dataset.salesmanager",
+                            "ship"
+                        ],
+                        "production": true
+                    }
+                },
+                {
+                    "dataset": {
+                        "identifier": "dataset.customer",
+                        "title": "Customer",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.customer.customerid",
+                                "title": "Customer",
+                                "folder": "Customer",
+                                "defaultLabel": "label.customer.customerid.customername",
+                                "labels": [
+                                    {
+                                        "label": {
+                                            "identifier": "label.customer.customerid.customername",
+                                            "title": "Customer Name",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    },
+                                    {
+                                        "label": {
+                                            "identifier": "label.customer.customerid",
+                                            "title": "CustomerID",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "attribute": {
+                                    "identifier": "attr.customer.country",
+                                    "title": "Country",
+                                    "description": "Country",
+                                    "folder": "Customer",
+                                    "defaultLabel": "label.customer.country",
+                                    "labels": [
+                                        {
+                                            "label": {
+                                                "identifier": "label.customer.country.pushpin",
+                                                "title": "pushpin",
+                                                "type": "GDC.text",
+                                                "dataType": "VARCHAR(128)"
+                                            }
+                                        },
+                                        {
+                                            "label": {
+                                                "identifier": "label.customer.country",
+                                                "title": "Country",
+                                                "type": "GDC.text",
+                                                "dataType": "VARCHAR(128)"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "production": true
+                    }
+                },
+                {
+                    "dataset": {
+                        "identifier": "dataset.product",
+                        "title": "Product",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.product.product",
+                                "title": "Product",
+                                "description": "Product",
+                                "folder": "Product",
+                                "defaultLabel": "label.product.product.productname",
+                                "labels": [
+                                    {
+                                        "label": {
+                                            "identifier": "label.product.product.productname",
+                                            "title": "Product Name",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    },
+                                    {
+                                        "label": {
+                                            "identifier": "label.product.product",
+                                            "title": "Product",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "attribute": {
+                                    "identifier": "attr.product.producttype",
+                                    "title": "Product Type",
+                                    "description": "Product Type",
+                                    "folder": "Product",
+                                    "defaultLabel": "label.product.producttype",
+                                    "labels": [
+                                        {
+                                            "label": {
+                                                "identifier": "label.product.producttype",
+                                                "title": "Product Type",
+                                                "type": "GDC.text",
+                                                "dataType": "VARCHAR(128)"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "facts": [
+                            {
+                                "fact": {
+                                    "identifier": "fact.product.unitpriceusd",
+                                    "title": "Unit Price USD",
+                                    "folder": "Product",
+                                    "description": "Unit Price USD",
+                                    "dataType": "DECIMAL(12,2)"
+                                }
+                            }
+                        ],
+                        "production": true
+                    }
+                },
+                {
+                    "dataset": {
+                        "identifier": "dataset.orderline",
+                        "title": "Order Line",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.orderline.factsof",
+                                "title": "Records of Order Line",
+                                "description": "Records of Order Line",
+                                "folder": "Order Line",
+                                "grain": [
+                                    {
+                                        "attribute": "attr.order.orderid"
+                                    },
+                                    {
+                                        "attribute": "attr.product.product"
+                                    }
+                                ]
+                            }
+                        },
+                        "facts": [
+                            {
+                                "fact": {
+                                    "identifier": "fact.orderline.itemssold",
+                                    "title": "Items Sold",
+                                    "folder": "Order Line",
+                                    "description": "Items Sold",
+                                    "dataType": "DECIMAL(12,2)"
+                                }
+                            },
+                            {
+                                "fact": {
+                                    "identifier": "fact.orderline.orderlinerevenue",
+                                    "title": "Order Line Revenue",
+                                    "folder": "Order Line",
+                                    "description": "Order Line Revenue",
+                                    "dataType": "DECIMAL(12,2)"
+                                }
+                            }
+                        ],
+                        "references": [
+                            "dataset.order",
+                            "dataset.product"
+                        ],
+                        "production": true
+                    }
+                },
+                {
+                    "dataset": {
+                        "identifier": "dataset.salesmanager",
+                        "title": "Sales Manager",
+                        "anchor": {
+                            "attribute": {
+                                "identifier": "attr.salesmanager.salesmanager",
+                                "title": "Sales Manager",
+                                "description": "Sales Manager",
+                                "folder": "Sales Manager",
+                                "defaultLabel": "label.salesmanager.salesmanager.salesmanagername",
+                                "labels": [
+                                    {
+                                        "label": {
+                                            "identifier": "label.salesmanager.salesmanager.salesmanagername",
+                                            "title": "Sales Manager Name",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    },
+                                    {
+                                        "label": {
+                                            "identifier": "label.salesmanager.salesmanager",
+                                            "title": "Sales Manager",
+                                            "type": "GDC.text",
+                                            "dataType": "VARCHAR(128)"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "production": true
+                    }
+                }
+            ],
+            "dateDimensions": [
+                {
+                    "dateDimension": {
+                        "identifier": "target.dataset.dt",
+                        "identifierPrefix": "target",
+                        "name": "target",
+                        "title": "Sales Date",
+                        "urn": "urn:gooddata:date",
+                        "bridges": [],
+                        "production": true
+                    }
+                },
+                {
+                    "dateDimension": {
+                        "identifier": "ship.dataset.dt",
+                        "identifierPrefix": "ship",
+                        "name": "ship",
+                        "title": "Shipment Date",
+                        "urn": "urn:gooddata:date",
+                        "bridges": [],
+                        "production": true
+                    }
+                }
+            ],
+            "modelMetadata": {
+                "containCA": true
+            }
+        }
+    },
+    "modelMapping": {
+        "datasetMappings": [
+            {
+                "datasetMapping": {
+                    "fields": [],
+                    "references": [],
+                    "identifier": "dataset.customer",
+                    "source": {
+                        "identifier": "customer",
+                        "csv": {
+                            "headerRow": 1,
+                            "delimiter": ","
+                        }
+                    },
+                    "system": {}
+                }
+            }
+        ]
+    },
+    "layout": {
+        "objects": [
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.order"
+                },
+                "collapse": false,
+                "x": 377,
+                "y": 256
+            },
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.customer"
+                },
+                "collapse": false,
+                "x": 136,
+                "y": 94
+            },
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.product"
+                },
+                "collapse": false,
+                "x": 363,
+                "y": 591
+            },
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.orderline"
+                },
+                "collapse": false,
+                "x": 649,
+                "y": 314
+            },
+            {
+                "identifier": {
+                    "type": "dataset",
+                    "id": "dataset.salesmanager"
+                },
+                "collapse": false,
+                "x": 100,
+                "y": 307
+            },
+            {
+                "identifier": {
+                    "type": "templateDataset",
+                    "id": "target"
+                },
+                "collapse": true,
+                "x": 109,
+                "y": 469
+            },
+            {
+                "identifier": {
+                    "type": "templateDataset",
+                    "id": "ship"
+                },
+                "collapse": true,
+                "x": 123,
+                "y": 583
+            }
+        ]
+    }
+}
