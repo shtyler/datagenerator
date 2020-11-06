@@ -44,12 +44,14 @@ END;
 {%- assign connectionpoints = ''-%}
 {%- for dataset in model.projectModel.datasets -%}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
-    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
-        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}	
+        {%- assign attribute_split = {{dataset.dataset.anchor.attribute.identifier}} | split: "." -%}
+        {%- assign default_attribute = {{attribute_split[1]}} | append: "." | append: {{attribute_split[2]}} -%}    
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-            {%- if {{current_label == default_label  %}  
+            {%- assign default_label = {{label_split[-2]}} | append: "." | append: {{label_split[-1]}} -%}
+            {%- if {{default_attribute == default_label  %}  
                 {%- assign connectionpoints = connectionpoints 
                     | append: {{dataset_name}} | append: "-" 
                     | append: {{label_split[-1]}} | append: "-" 
@@ -58,33 +60,32 @@ END;
         {%- endfor -%}   
     {%- endif -%}
 {%- endfor -%} 
-{%- assign connectionpoints = connectionpoints | split: ',' %}
+{%- assign connectionpoints = connectionpoints | split: ',' -%}
+
 
 {%-assign out_prefix = "out_test_" %}
 
 -----------------------------
- Dropping {{out_prefix}} tables  
+-- Dropping {{out_prefix}} tables  
 ----------------------------- 
 {%- for dataset in model.projectModel.datasets %}
 DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
 {%- endfor %}
 
 ------------------------------
- Creating {{out_prefix}} tables 
+-- Creating {{out_prefix}} tables 
 ------------------------------
 {% for dataset in model.projectModel.datasets %}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
 ---- Creating {{out_prefix}}{{dataset_name}} ----
-{{}}
-{%- if dataset_name == 'product' -%}
+
 
 CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
 {{}}
     {% comment %} cp {% endcomment %} 
     {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
     {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
-        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
@@ -92,23 +93,25 @@ CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
         {%- unless forloop.last -%},
     {% endunless -%}            
         {%- endfor -%}
-    {%- if dataset.dataset.attributes -%},
+    {%- if dataset.dataset.attributes or dataset.dataset.references -%},
     {% endif %}      
     {%- endif -%}
-    {% comment %} attributes {% endcomment %}         
-    {%- for attribute in dataset.dataset.attributes -%}
-        {%- for label in attribute.attribute.labels -%}
-            {%- assign current_label = {{label.label.identifier}} -%}
-            {%- assign label_split = {{current_label | split: "."}} -%}
-    {{label_split[-1]}} {{label.label.dataType}}
+    {%- if dataset.dataset.attributes -%}
+        {% comment %} attributes {% endcomment %}         
+        {%- for attribute in dataset.dataset.attributes -%}
+            {%- for label in attribute.attribute.labels -%}
+                {%- assign current_label = {{label.label.identifier}} -%}
+                {%- assign label_split = {{current_label | split: "."}} -%}
+        {{label_split[-1]}} {{label.label.dataType}}
+            {%- unless forloop.last -%},
+        {% endunless -%}            
+            {%- endfor -%}    
         {%- unless forloop.last -%},
-    {% endunless -%}            
-        {%- endfor -%}    
-    {%- unless forloop.last -%},
-    {% endunless -%}               
-    {%- endfor -%}  
-    {% comment %} references {% endcomment %}
-    {%- if dataset.dataset.references -%},
+        {% endunless -%}               
+        {%- endfor -%}  
+        {% comment %} references {% endcomment %}
+        {%- if dataset.dataset.references -%},
+        {% endif %}
     {% endif %}
     {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
@@ -150,25 +153,27 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
         {%- unless forloop.last -%},
     {% endunless -%}            
         {%- endfor -%}
-    {%- if dataset.dataset.attributes -%},
+    {%- if dataset.dataset.attributes or dataset.dataset.references-%},
     {% endif %}      
     {%- endif -%}
+    {%- if dataset.dataset.attributes -%}
     {% comment %} attributes {% endcomment %}         
-    {%- for attribute in dataset.dataset.attributes -%}
-        {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
-        {%- for label in attribute.attribute.labels -%}
-            {%- assign current_label = {{label.label.identifier}} -%}
-            {%- assign label_split = {{current_label | split: "."}} -%}
-    {{label_split[-1]}} 
+        {%- for attribute in dataset.dataset.attributes -%}
+            {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
+            {%- for label in attribute.attribute.labels -%}
+                {%- assign current_label = {{label.label.identifier}} -%}
+                {%- assign label_split = {{current_label | split: "."}} -%}
+        {{label_split[-1]}} 
+            {%- unless forloop.last -%},
+        {% endunless -%}            
+            {%- endfor -%}    
         {%- unless forloop.last -%},
-    {% endunless -%}            
-        {%- endfor -%}    
-    {%- unless forloop.last -%},
-    {% endunless -%}               
-    {%- endfor -%}         
-    {% comment %} references {% endcomment %}
-    {%- if dataset.dataset.references -%},
-    {% endif %}      
+        {% endunless -%}               
+        {%- endfor -%} 
+        {%- if dataset.dataset.references -%},
+        {% endif %}          
+    {%- endif -%}    
+    {% comment %} references {% endcomment %}    
     {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
         {%- if reference_split[0] == "dataset" -%}
@@ -210,25 +215,27 @@ SELECT DISTINCT
         {%- unless forloop.last -%},
     {% endunless -%}            
         {%- endfor -%}  
-    {%- if dataset.dataset.attributes -%},
+    {%- if dataset.dataset.attributes or dataset.dataset.references-%},
     {% endif %}        
     {%- endif -%}
-    {% comment %} attributes {% endcomment %}         
-    {%- for attribute in dataset.dataset.attributes -%}
-        {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
-        {%- for label in attribute.attribute.labels -%}
-            {%- assign current_label = {{label.label.identifier}} -%}
-            {%- assign label_split = {{current_label | split: "."}} -%}
-    randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+    {%- if dataset.dataset.attributes -%}
+        {% comment %} attributes {% endcomment %}         
+        {%- for attribute in dataset.dataset.attributes -%}
+            {%- assign default_label = {{attribute.attribute.defaultLabel}} -%}
+            {%- for label in attribute.attribute.labels -%}
+                {%- assign current_label = {{label.label.identifier}} -%}
+                {%- assign label_split = {{current_label | split: "."}} -%}
+        randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+            {%- unless forloop.last -%},
+        {% endunless -%}            
+            {%- endfor -%}    
         {%- unless forloop.last -%},
-    {% endunless -%}            
-        {%- endfor -%}    
-    {%- unless forloop.last -%},
-    {% endunless -%}               
-    {%- endfor -%}  
-    {% comment %} out table references {% endcomment %}
-    {%- if dataset.dataset.references -%},
-    {% endif %}
+        {% endunless -%}               
+        {%- endfor -%} 
+        {%- if dataset.dataset.references -%},
+        {% endif %}
+    {%- endif -%}    
+    {% comment %} references {% endcomment %}
     {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
         {%- if reference_split[0] == "dataset" -%}
@@ -242,7 +249,8 @@ SELECT DISTINCT
     {% endunless -%}               
     {%- endfor -%} 
     {% comment %} facts {% endcomment %}
-    {%- if dataset.dataset.facts -%},{% endif %}    
+    {%- if dataset.dataset.facts -%},
+    {% endif %}    
     {%- for fact in dataset.dataset.facts -%}
             {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
             randomfact(10000,30000) as {{fact_split[-1]}}              
@@ -263,6 +271,5 @@ FROM
 {%- endif -%}
 ) a ;
 
-{%- endif -%}
 
 {% endfor -%}

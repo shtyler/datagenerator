@@ -66,14 +66,14 @@ END;
 {%-assign out_prefix = "out_test_" %}
 
 -----------------------------
- Dropping {{out_prefix}} tables  
+-- Dropping {{out_prefix}} tables  
 ----------------------------- 
 {%- for dataset in model.projectModel.datasets %}
 DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
 {%- endfor %}
 
 ------------------------------
- Creating {{out_prefix}} tables 
+-- Creating {{out_prefix}} tables 
 ------------------------------
 {% for dataset in model.projectModel.datasets %}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
