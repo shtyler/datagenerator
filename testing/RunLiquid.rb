@@ -10,7 +10,7 @@ parameters_path = ARGV[1]
 
 #template_path = gets.strip
 
-template_path = 'output_views.liquid'
+template_path = '../templates/generate_os.liquid'
 
 parameters_path = '../param_definitions/LDM_geo.json'
 
