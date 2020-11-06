@@ -30,9 +30,9 @@ END;
 CREATE OR REPLACE FUNCTION randomdata (id INT, field VARCHAR, cp BOOLEAN, geo VARCHAR) RETURN VARCHAR
 AS
 BEGIN
-   RETURN CASE WHEN geo = ‘pushpin’ THEN (1-(random()*2))::INT*40 || ‘;’ || ((2-(random()*6))::INT*90)
-          WHEN cp is TRUE THEN id::INT || ‘_’ || field
-          ELSE (random()*id)::INT || ‘_’ || field END;
+   RETURN CASE WHEN geo = 'pushpin' THEN (1-(random()*2))::INT*40 || ';' || ((2-(random()*6))::INT*90)
+          WHEN cp is TRUE THEN id::INT || '_' || field
+          ELSE (random()*id)::INT || '_' || field END;
 END;
 CREATE OR REPLACE FUNCTION randomfact (minimum INT, maximum INT) RETURN INT
 AS
