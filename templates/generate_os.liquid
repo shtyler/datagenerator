@@ -298,7 +298,7 @@ DROP VIEW IF EXISTS {{out_prefix}}vw_{{dataset.dataset.identifier | remove: "dat
 {% for dataset in model.projectModel.datasets -%}
 {% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
 
-CREATE VIEW IF NOT EXISTS {{out_prefix}}vw_{{dataset_name}} AS
+CREATE OR REPLACE {{out_prefix}}vw_{{dataset_name}} AS
 SELECT
     {% comment %} "cp__" has one? condition: first anchor attribute is not factof. Can this be ultimately checked from identifier? {% endcomment %} 
     {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
