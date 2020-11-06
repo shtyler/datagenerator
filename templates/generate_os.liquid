@@ -211,8 +211,9 @@ SELECT DISTINCT
             {%- assign label_split = {{current_label | split: "."}} -%}
                     {%- for cp in connectionpoints -%}
                         {%- assign current_cp = {{cp | split: '-'}} -%}
-                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
-                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}}  == "INT"%}ID as {{label_split[-1]}}
+                        {%- elsif label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}}  != "INT"%}randomdata(ID,'{{label_split[-1]}}',TRUE,'{{label_split[-1]}}') as {{label_split[-1]}}
+                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}}  != "INT"%}randomdata(30,'{{label_split[-1]}}',FALSE,'{{label_split[-1]}}') as {{label_split[-1]}}
                         {%- endif -%} 
                     {%- endfor -%}
         {%- unless forloop.last -%},
@@ -228,7 +229,11 @@ SELECT DISTINCT
             {%- for label in attribute.attribute.labels -%}
                 {%- assign current_label = {{label.label.identifier}} -%}
                 {%- assign label_split = {{current_label | split: "."}} -%}
-        randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+    {%- if label.label.dataType  == "INT" -%} 
+        (random()*30)::INT as {{label_split[-1]}}
+    {%- elsif label.label.dataType  != "INT" -%} 
+        randomdata(30,'{{label_split[-1]}}',FALSE,'{{label_split[-1]}}') as {{label_split[-1]}}
+    {%- endif -%} 
             {%- unless forloop.last -%},
         {% endunless -%}            
             {%- endfor -%}    
@@ -244,7 +249,9 @@ SELECT DISTINCT
         {%- if reference_split[0] == "dataset" -%}
             {%- for cp in connectionpoints -%}
                 {%- assign current_cp = {{cp | split: '-'}} -%}
-                {%- if reference_split[1] == {{current_cp[0]}} %}randomdata(30,'{{current_cp[1]}}',FALSE) as {{current_cp[1]}} {%- endif -%}                
+                {%- if reference_split[1] == {{current_cp[0]}} and {{current_cp[2]}}  == "INT"-%} (random()*30)::INT as {{current_cp[1]}} 
+                {%- elsif reference_split[1] == {{current_cp[0]}} and {{current_cp[2]}}  != "INT" -%}randomdata(30,'{{current_cp[1]}}',FALSE,'{{current_cp[1]}}') as {{current_cp[1]}}
+                {%- endif -%}
             {%- endfor -%}
         {%- else %}randomdate(now()-300,now() ) as {{reference}}
         {%- endif -%}
