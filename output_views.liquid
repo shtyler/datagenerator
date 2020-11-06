@@ -3,11 +3,13 @@
 {%- for dataset in model.projectModel.datasets -%}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
     {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}	
-        {%- assign default_label = {{dataset.dataset.anchor.attribute.defaultLabel}} -%}
+        {%- assign attribute_split = {{dataset.dataset.anchor.attribute.identifier}} | split: "." -%}
+        {%- assign default_attribute = {{attribute_split[1]}} | append: "." | append: {{attribute_split[2]}} -%}    
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
-            {%- if {{current_label == default_label  %}  
+            {%- assign default_label = {{label_split[-2]}} | append: "." | append: {{label_split[-1]}} -%}
+            {%- if {{default_attribute == default_label  %}  
                 {%- assign connectionpoints = connectionpoints 
                     | append: {{dataset_name}} | append: "-" 
                     | append: {{label_split[-1]}} | append: "-" 
@@ -52,7 +54,7 @@ SELECT
         {%- unless forloop.last -%},
     {% endunless -%}            
         {%- endfor -%}
-    {%- if dataset.dataset.attributes -%},
+    {%- if dataset.dataset.attributes or dataset.dataset.references -%},
     {% endif %}      
     {%- endif -%}
     {%- if dataset.dataset.attributes  -%}
@@ -95,7 +97,7 @@ SELECT
                 {%- assign current_cp = {{cp | split: '-'}} %}
                 {%- if reference_split[1] == {{current_cp[0]}} %}{{current_cp[1]}} AS r__{{reference_split[1]}}{%- endif -%}                
             {%- endfor -%}
-        {%- else -%}{{reference}} AS r__{{reference}}
+        {%- else -%}{{reference}} AS d__{{reference}}
         {%- endif -%}
     {%- unless forloop.last -%},
     {% endunless %}               
