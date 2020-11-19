@@ -55,7 +55,7 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 1. Clone this git repo and load the `datagen` folder to your S3 bucket
-2. Update `/param_definitions/LDM.json` with your freshly created LDM from the WEB modeler (/admin/modeler/#/projects/{pid}). WARNING: LDM.json must be in ASCII encoding.
+2. Update `datagen/param_definitions/LDM.json` with your freshly created LDM from the WEB modeler (/admin/modeler/#/projects/{pid}). WARNING: LDM.json must be in ASCII encoding.
 3. Set up your output stage (OS) prefix (default is `out_generated_vw_`) 
 4. (Optional) Change default OS prefix in all 3 liquid templates `{%-assign out_prefix = "out_generated_vw_" -%}`
 5. (Optional) Load custom input to the table `csv_custom_values`
