@@ -1,6 +1,6 @@
 {%-assign out_prefix = "out_generated_" -%}
 {%-assign number_of_lines_fact = "1000" -%}
-{%-assign number_of_lines_dimension = "50" -%}
+{%-assign number_of_lines_dimension = "100" -%}
 
 ---------------------------------------------------------------------
 ---> Temporary tables  
@@ -27,6 +27,7 @@ AS
 BEGIN
   RETURN TO_TIMESTAMP(EXTRACT(EPOCH FROM d1) + RANDOMINT(FLOOR(EXTRACT(EPOCH FROM d2) - EXTRACT(EPOCH FROM d1))::INT));
 END;
+
 CREATE OR REPLACE FUNCTION randomdata (id INT, field VARCHAR, cp BOOLEAN, geo VARCHAR) RETURN VARCHAR
 AS
 BEGIN
@@ -34,12 +35,23 @@ BEGIN
           WHEN cp is TRUE THEN id::INT || '_' || field
           ELSE (random()*id)::INT || '_' || field END;
 END;
+
 CREATE OR REPLACE FUNCTION randomfact (minimum INT, maximum INT) RETURN INT
 AS
 BEGIN
    RETURN (random()*ABS(maximum-minimum))::INT +
         CASE WHEN maximum > minimum THEN minimum
         ELSE maximum END;
+END;
+
+CREATE OR REPLACE FUNCTION randomcustomdata(values VARCHAR) RETURN VARCHAR
+AS
+BEGIN
+   RETURN 	
+   	CASE 
+		WHEN values LIKE '%,%' THEN TRIM(SPLIT_PART(values,',', (FLOOR(RANDOM() * (REGEXP_COUNT(values,',') + 1) + 1 ))::INT))
+		WHEN values LIKE '%-%' THEN randomfact(SPLIT_PART(values,'-',1)::INT, SPLIT_PART(values,'-',2)::INT)::VARCHAR
+	END;
 END;
 
 
@@ -107,11 +119,11 @@ CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
     {% endunless -%}            
             {%- endfor -%}    
         {%- unless forloop.last -%},
-        {% endunless -%}               
+    {% endunless -%}               
         {%- endfor -%}  
         {% comment %} references {% endcomment %}
-        {%- if dataset.dataset.references -%},
-        {% endif %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
     {%- endif -%}
     {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
@@ -171,10 +183,10 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
     {% endunless -%}            
             {%- endfor -%}    
         {%- unless forloop.last -%},
-        {% endunless -%}               
+    {% endunless -%}               
         {%- endfor -%} 
-        {%- if dataset.dataset.references -%},
-        {% endif %}          
+    {%- if dataset.dataset.references -%},
+    {% endif %}          
     {%- endif -%}    
     {% comment %} references {% endcomment %}    
     {%- for reference in dataset.dataset.references -%}
@@ -239,10 +251,10 @@ SELECT DISTINCT
     {% endunless -%}            
             {%- endfor -%}    
         {%- unless forloop.last -%},
-        {% endunless -%}               
+    {% endunless -%}               
         {%- endfor -%} 
-        {%- if dataset.dataset.references -%},
-        {% endif %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
     {%- endif -%}    
     {% comment %} references {% endcomment %}
     {%- for reference in dataset.dataset.references -%}
@@ -276,9 +288,9 @@ FROM
      order by id
 {% comment %} {% endcomment %}
 {%- if {(dataset.dataset.facts.first)} -%}
-     limit 1000
+     limit {{number_of_lines_fact}}
 {%- else -%} 
-     limit 50
+     limit {{number_of_lines_dimension}}
 {%- endif -%}
 ) a ;
 
@@ -287,14 +299,14 @@ FROM
 
 
 ---------------------------------------------------------------------
----> Dropping out views   
+---> Dropping {{out_prefix}} views   
 ---------------------------------------------------------------------
 {% for dataset in model.projectModel.datasets %}
 DROP VIEW IF EXISTS {{out_prefix}}vw_{{dataset.dataset.identifier | remove: "dataset." }};
 {%- endfor %}
 
 ---------------------------------------------------------------------
----> Creating out_vw_views 
+---> Creating {{out_prefix}} views 
 ---------------------------------------------------------------------
 {% for dataset in model.projectModel.datasets -%}
 {% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
@@ -349,11 +361,11 @@ SELECT
     {% endunless -%}            
             {%- endfor -%}    
         {%- unless forloop.last -%},
-        {% endunless -%}               
+    {% endunless -%}               
         {%- endfor -%}  
         {% comment %} references in views {% endcomment %}
-        {%- if dataset.dataset.references -%},
-        {% endif %} 
+    {%- if dataset.dataset.references -%},
+    {% endif %} 
     {%- endif %}     
     {%- for reference in dataset.dataset.references -%}
         {%- assign reference_split = {{reference | split: "."}} -%}
@@ -384,4 +396,60 @@ FROM {{out_prefix}}{{dataset_name}}
 ;
 
 {%- endfor -%}
+
+
+
+
+---------------------------------------------------------------------
+---> Updating {{out_prefix}} tables with custom values 
+---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS csv_custom_values
+(
+	dataset VARCHAR,
+	field VARCHAR,
+	values VARCHAR
+);
+
+CREATE OR REPLACE VIEW wrk_generated_custom_values AS 
+	SELECT 
+		LOWER(dataset) as dataset,
+		LOWER(REGEXP_REPLACE(REPLACE(field,' ',''),'(\d)','')) as field,
+		values
+	FROM csv_custom_values	
+;
+
+{% for dataset in model.projectModel.datasets -%}
+{% assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
+
+
+---- Updating {{out_prefix}}{{dataset_name}} ----
+{{}}
+{%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+    {% for label in dataset.dataset.anchor.attribute.labels %}
+        {%- assign current_label = {{label.label.identifier}} -%}
+        {% assign label_split = {{current_label | split: "."}} %}
+UPDATE {{out_prefix}}{{dataset_name}} t SET {{label_split[-1]}} = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{label_split[-1]}}';      
+    {% endfor %}
+{%- endif -%}  
+{{}}      
+{%- for attribute in dataset.dataset.attributes -%}
+    {% for label in attribute.attribute.labels %}
+        {%- assign current_label = {{label.label.identifier}} -%}
+        {% assign label_split = {{current_label | split: "."}} %}
+UPDATE {{out_prefix}}{{dataset_name}} t SET {{label_split[-1]}} = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{label_split[-1]}}';               
+    {% endfor %}    
+{%- endfor -%}  
+    
+{%- for fact in dataset.dataset.facts -%}
+    {% assign fact_split = {{fact.fact.identifier | split: "."}} %}  
+UPDATE {{out_prefix}}{{dataset_name}} t SET {{fact_split[-1]}} = randomcustomdata(c.values)::{{fact.fact.dataType}} 
+FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{fact_split[-1]}}';  
+{{}}                
+{%- endfor -%}  
+      
+
+{%- endfor -%}
+
 

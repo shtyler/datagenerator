@@ -1,0 +1,634 @@
+---------------------------------------------------------------------
+---> Temporary tables  
+---------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_generation_table;
+CREATE TABLE tmp_generation_table
+(
+ID INT
+);
+
+INSERT INTO tmp_generation_table 
+
+SELECT row_number() over () ID 
+FROM system_tables s 
+CROSS JOIN system_tables l 
+
+limit 2000
+;
+---------------------------------------------------------------------
+---> Random functions   
+---------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION randomdate (d1 TIMESTAMP, d2 TIMESTAMP) RETURN DATE
+AS
+BEGIN
+  RETURN TO_TIMESTAMP(EXTRACT(EPOCH FROM d1) + RANDOMINT(FLOOR(EXTRACT(EPOCH FROM d2) - EXTRACT(EPOCH FROM d1))::INT));
+END;
+
+CREATE OR REPLACE FUNCTION randomdata (id INT, field VARCHAR, cp BOOLEAN, geo VARCHAR) RETURN VARCHAR
+AS
+BEGIN
+   RETURN CASE WHEN geo = 'pushpin' THEN (1-(random()*2))::INT*40 || ';' || ((2-(random()*6))::INT*90)
+          WHEN cp is TRUE THEN id::INT || '_' || field
+          ELSE (random()*id)::INT || '_' || field END;
+END;
+
+CREATE OR REPLACE FUNCTION randomfact (minimum INT, maximum INT) RETURN INT
+AS
+BEGIN
+   RETURN (random()*ABS(maximum-minimum))::INT +
+        CASE WHEN maximum > minimum THEN minimum
+        ELSE maximum END;
+END;
+
+CREATE OR REPLACE FUNCTION randomcustomdata(values VARCHAR) RETURN VARCHAR
+AS
+BEGIN
+   RETURN 	
+   	CASE 
+		WHEN values LIKE '%,%' THEN TRIM(SPLIT_PART(values,',', (FLOOR(RANDOM() * (REGEXP_COUNT(values,',') + 1) + 1 ))::INT))
+		WHEN values LIKE '%-%' THEN randomfact(SPLIT_PART(values,'-',1)::INT, SPLIT_PART(values,'-',2)::INT)::VARCHAR
+	END;
+END;
+
+---------------------------------------------------------------------
+---> Dropping out_generated_ tables  
+---------------------------------------------------------------------
+DROP TABLE IF EXISTS out_generated_agent;
+DROP TABLE IF EXISTS out_generated_bot;
+DROP TABLE IF EXISTS out_generated_botsessions;
+DROP TABLE IF EXISTS out_generated_person;
+DROP TABLE IF EXISTS out_generated_conversation;
+
+---------------------------------------------------------------------
+---> Creating out_generated_ tables 
+---------------------------------------------------------------------
+
+
+---- Creating out_generated_agent ----
+
+CREATE TABLE IF NOT EXISTS out_generated_agent (
+
+    agentid VARCHAR(128),
+    firstname VARCHAR(128),
+    lastname VARCHAR(128),
+    phone VARCHAR(128),
+    email VARCHAR(128),
+    language VARCHAR(128),
+    agentstatus VARCHAR(128),
+    manager VARCHAR(128)	
+   , client_id VARCHAR(128) DEFAULT NULL ENCODING RLE
+   , _sys_updated_at TIMESTAMP DEFAULT NULL ENCODING RLE
+   , _sys_is_deleted BOOLEAN DEFAULT false ENCODING RLE	
+ 
+);
+
+---- Inserting Data to out_generated_agent ----
+
+INSERT INTO out_generated_agent (
+    
+    agentid,
+    firstname,
+    lastname,
+    phone,
+    email,
+    language,
+    agentstatus,
+    manager    
+
+)
+
+SELECT DISTINCT
+  
+    randomdata(ID,'agentid',TRUE,'agentid') as agentid,
+    randomdata(30,'firstname',FALSE,'firstname') as firstname,
+    randomdata(30,'lastname',FALSE,'lastname') as lastname,
+    randomdata(30,'phone',FALSE,'phone') as phone,
+    randomdata(30,'email',FALSE,'email') as email,
+    randomdata(30,'language',FALSE,'language') as language,
+    randomdata(30,'agentstatus',FALSE,'agentstatus') as agentstatus,
+    randomdata(30,'manager',FALSE,'manager') as manager      
+    --,FALSE as _sys_is_deleted
+
+FROM
+    (SELECT ID
+     FROM tmp_generation_table
+     order by id
+limit 100) a ;
+
+
+
+---- Creating out_generated_bot ----
+
+CREATE TABLE IF NOT EXISTS out_generated_bot (
+
+    botname VARCHAR(128),
+    botchannel VARCHAR(128),
+    botstatus VARCHAR(128),
+    botcreated DATE	
+   , client_id VARCHAR(128) DEFAULT NULL ENCODING RLE
+   , _sys_updated_at TIMESTAMP DEFAULT NULL ENCODING RLE
+   , _sys_is_deleted BOOLEAN DEFAULT false ENCODING RLE	
+ 
+);
+
+---- Inserting Data to out_generated_bot ----
+
+INSERT INTO out_generated_bot (
+    
+    botname,
+    botchannel,
+    botstatus,
+    botcreated    
+
+)
+
+SELECT DISTINCT
+  
+    randomdata(ID,'botname',TRUE,'botname') as botname,
+    randomdata(30,'botchannel',FALSE,'botchannel') as botchannel,
+    randomdata(30,'botstatus',FALSE,'botstatus') as botstatus,
+    randomdate(now()-300,now() ) as botcreated      
+    --,FALSE as _sys_is_deleted
+
+FROM
+    (SELECT ID
+     FROM tmp_generation_table
+     order by id
+limit 100) a ;
+
+
+
+---- Creating out_generated_botsessions ----
+
+CREATE TABLE IF NOT EXISTS out_generated_botsessions (
+
+    sessionid VARCHAR(128),
+    sessionchannel VARCHAR(128),
+    expirationstatus VARCHAR(128),
+    sessionstart DATE,
+    sessionduration DECIMAL(12,2)	
+   , client_id VARCHAR(128) DEFAULT NULL ENCODING RLE
+   , _sys_updated_at TIMESTAMP DEFAULT NULL ENCODING RLE
+   , _sys_is_deleted BOOLEAN DEFAULT false ENCODING RLE	
+ 
+);
+
+---- Inserting Data to out_generated_botsessions ----
+
+INSERT INTO out_generated_botsessions (
+    
+    sessionid,
+    sessionchannel,
+    expirationstatus,
+    sessionstart,
+    sessionduration    
+
+)
+
+SELECT DISTINCT
+  
+    randomdata(ID,'sessionid',TRUE,'sessionid') as sessionid,
+    randomdata(30,'sessionchannel',FALSE,'sessionchannel') as sessionchannel,
+    randomdata(30,'expirationstatus',FALSE,'expirationstatus') as expirationstatus,
+    randomdate(now()-300,now() ) as sessionstart,
+    randomfact(10000,30000) as sessionduration      
+    --,FALSE as _sys_is_deleted
+
+FROM
+    (SELECT ID
+     FROM tmp_generation_table
+     order by id
+limit 1000) a ;
+
+
+
+---- Creating out_generated_person ----
+
+CREATE TABLE IF NOT EXISTS out_generated_person (
+
+    personid VARCHAR(128),
+    personfirstname VARCHAR(128),
+    personlastname VARCHAR(128),
+    personemail VARCHAR(128),
+    personphone VARCHAR(128),
+    tag VARCHAR(128),
+    segment VARCHAR(128)	
+   , client_id VARCHAR(128) DEFAULT NULL ENCODING RLE
+   , _sys_updated_at TIMESTAMP DEFAULT NULL ENCODING RLE
+   , _sys_is_deleted BOOLEAN DEFAULT false ENCODING RLE	
+ 
+);
+
+---- Inserting Data to out_generated_person ----
+
+INSERT INTO out_generated_person (
+    
+    personid,
+    personfirstname,
+    personlastname,
+    personemail,
+    personphone,
+    tag,
+    segment    
+
+)
+
+SELECT DISTINCT
+  
+    randomdata(ID,'personid',TRUE,'personid') as personid,
+    randomdata(30,'personfirstname',FALSE,'personfirstname') as personfirstname,
+    randomdata(30,'personlastname',FALSE,'personlastname') as personlastname,
+    randomdata(30,'personemail',FALSE,'personemail') as personemail,
+    randomdata(30,'personphone',FALSE,'personphone') as personphone,
+    randomdata(30,'tag',FALSE,'tag') as tag,
+    randomdata(30,'segment',FALSE,'segment') as segment      
+    --,FALSE as _sys_is_deleted
+
+FROM
+    (SELECT ID
+     FROM tmp_generation_table
+     order by id
+limit 100) a ;
+
+
+
+---- Creating out_generated_conversation ----
+
+CREATE TABLE IF NOT EXISTS out_generated_conversation (
+
+    conversationid VARCHAR(128),
+    conversationtopic VARCHAR(128),
+    conversationstatus VARCHAR(128),
+    conversationpriority VARCHAR(128),
+    conversationchannel VARCHAR(128),
+    satisfactionscorecause VARCHAR(128),
+    routepriority VARCHAR(128),
+    queuename VARCHAR(128),
+    department VARCHAR(128),
+    answersource VARCHAR(128),
+    agentid VARCHAR(128),
+    botname VARCHAR(128),
+    sessionid VARCHAR(128),
+    personid VARCHAR(128),
+    conversationcreated DATE,
+    resolutiontime DECIMAL(12,2),
+    queuetime DECIMAL(12,2),
+    bothandlingtime DECIMAL(12,2),
+    wrapuptime DECIMAL(12,2),
+    satisfactionscore DECIMAL(12,2),
+    agenthandlingtime DECIMAL(12,2),
+    stresponsetime DECIMAL(12,2),
+    platformuptime DECIMAL(12,2),
+    numberofmessages DECIMAL(12,2),
+    transferredtoagentflag DECIMAL(12,2)	
+   , client_id VARCHAR(128) DEFAULT NULL ENCODING RLE
+   , _sys_updated_at TIMESTAMP DEFAULT NULL ENCODING RLE
+   , _sys_is_deleted BOOLEAN DEFAULT false ENCODING RLE	
+ 
+);
+
+---- Inserting Data to out_generated_conversation ----
+
+INSERT INTO out_generated_conversation (
+    
+    conversationid,
+    conversationtopic,
+    conversationstatus,
+    conversationpriority,
+    conversationchannel,
+    satisfactionscorecause,
+    routepriority,
+    queuename,
+    department,
+    answersource,
+    agentid,
+    botname,
+    sessionid,
+    personid,
+    conversationcreated,
+    resolutiontime,
+    queuetime,
+    bothandlingtime,
+    wrapuptime,
+    satisfactionscore,
+    agenthandlingtime,
+    stresponsetime,
+    platformuptime,
+    numberofmessages,
+    transferredtoagentflag    
+
+)
+
+SELECT DISTINCT
+  
+    randomdata(ID,'conversationid',TRUE,'conversationid') as conversationid,
+    randomdata(30,'conversationtopic',FALSE,'conversationtopic') as conversationtopic,
+    randomdata(30,'conversationstatus',FALSE,'conversationstatus') as conversationstatus,
+    randomdata(30,'conversationpriority',FALSE,'conversationpriority') as conversationpriority,
+    randomdata(30,'conversationchannel',FALSE,'conversationchannel') as conversationchannel,
+    randomdata(30,'satisfactionscorecause',FALSE,'satisfactionscorecause') as satisfactionscorecause,
+    randomdata(30,'routepriority',FALSE,'routepriority') as routepriority,
+    randomdata(30,'queuename',FALSE,'queuename') as queuename,
+    randomdata(30,'department',FALSE,'department') as department,
+    randomdata(30,'answersource',FALSE,'answersource') as answersource,
+    randomdata(30,'agentid',FALSE,'agentid') as agentid,
+    randomdata(30,'botname',FALSE,'botname') as botname,
+    randomdata(30,'sessionid',FALSE,'sessionid') as sessionid,
+    randomdata(30,'personid',FALSE,'personid') as personid,
+    randomdate(now()-300,now() ) as conversationcreated,
+    randomfact(10000,30000) as resolutiontime,
+    randomfact(10000,30000) as queuetime,
+    randomfact(10000,30000) as bothandlingtime,
+    randomfact(10000,30000) as wrapuptime,
+    randomfact(10000,30000) as satisfactionscore,
+    randomfact(10000,30000) as agenthandlingtime,
+    randomfact(10000,30000) as stresponsetime,
+    randomfact(10000,30000) as platformuptime,
+    randomfact(10000,30000) as numberofmessages,
+    randomfact(10000,30000) as transferredtoagentflag      
+    --,FALSE as _sys_is_deleted
+
+FROM
+    (SELECT ID
+     FROM tmp_generation_table
+     order by id
+limit 1000) a ;
+
+---------------------------------------------------------------------
+---> Dropping out_generated_ views   
+---------------------------------------------------------------------
+
+DROP VIEW IF EXISTS out_generated_vw_agent;
+DROP VIEW IF EXISTS out_generated_vw_bot;
+DROP VIEW IF EXISTS out_generated_vw_botsessions;
+DROP VIEW IF EXISTS out_generated_vw_person;
+DROP VIEW IF EXISTS out_generated_vw_conversation;
+
+---------------------------------------------------------------------
+---> Creating out_generated_ views 
+---------------------------------------------------------------------
+
+
+---- Creating out_generated_vw_agent ----
+
+CREATE OR REPLACE VIEW out_generated_vw_agent AS
+SELECT
+    agentid AS cp__agentid,
+    firstname AS a__firstname,
+    lastname AS a__lastname,
+    phone AS a__phone,
+    email AS a__email,
+    language AS a__language,
+    agentstatus AS a__agentstatus,
+    manager AS a__manager
+-- , client_id AS x__client_id
+-- , _sys_updated_at AS x__timestamp
+-- , _sys_is_deleted AS x__deleted
+FROM out_generated_agent
+;
+
+---- Creating out_generated_vw_bot ----
+
+CREATE OR REPLACE VIEW out_generated_vw_bot AS
+SELECT
+    botname AS cp__botname,
+    botchannel AS a__botchannel,
+    botstatus AS a__botstatus,
+    botcreated AS d__botcreated
+-- , client_id AS x__client_id
+-- , _sys_updated_at AS x__timestamp
+-- , _sys_is_deleted AS x__deleted
+FROM out_generated_bot
+;
+
+---- Creating out_generated_vw_botsessions ----
+
+CREATE OR REPLACE VIEW out_generated_vw_botsessions AS
+SELECT
+    sessionid AS cp__sessionid,
+    sessionchannel AS a__sessionchannel,
+    expirationstatus AS a__expirationstatus,
+    sessionstart AS d__sessionstart,
+    sessionduration AS f__sessionduration
+-- , client_id AS x__client_id
+-- , _sys_updated_at AS x__timestamp
+-- , _sys_is_deleted AS x__deleted
+FROM out_generated_botsessions
+;
+
+---- Creating out_generated_vw_person ----
+
+CREATE OR REPLACE VIEW out_generated_vw_person AS
+SELECT
+    personid AS cp__personid,
+    personfirstname AS a__personfirstname,
+    personlastname AS a__personlastname,
+    personemail AS a__personemail,
+    personphone AS a__personphone,
+    tag AS a__tag,
+    segment AS a__segment
+-- , client_id AS x__client_id
+-- , _sys_updated_at AS x__timestamp
+-- , _sys_is_deleted AS x__deleted
+FROM out_generated_person
+;
+
+---- Creating out_generated_vw_conversation ----
+
+CREATE OR REPLACE VIEW out_generated_vw_conversation AS
+SELECT
+    conversationid AS cp__conversationid,
+    conversationtopic AS a__conversationtopic,
+    conversationstatus AS a__conversationstatus,
+    conversationpriority AS a__conversationpriority,
+    conversationchannel AS a__conversationchannel,
+    satisfactionscorecause AS a__satisfactionscorecause,
+    routepriority AS a__routepriority,
+    queuename AS a__queuename,
+    department AS a__department,
+    answersource AS a__answersource,
+    agentid AS r__agent,
+    botname AS r__bot,
+    sessionid AS r__botsessions,
+    personid AS r__person,
+    conversationcreated AS d__conversationcreated,
+    resolutiontime AS f__resolutiontime,
+    queuetime AS f__queuetime,
+    bothandlingtime AS f__bothandlingtime,
+    wrapuptime AS f__wrapuptime,
+    satisfactionscore AS f__satisfactionscore,
+    agenthandlingtime AS f__agenthandlingtime,
+    stresponsetime AS f__stresponsetime,
+    platformuptime AS f__platformuptime,
+    numberofmessages AS f__numberofmessages,
+    transferredtoagentflag AS f__transferredtoagentflag
+-- , client_id AS x__client_id
+-- , _sys_updated_at AS x__timestamp
+-- , _sys_is_deleted AS x__deleted
+FROM out_generated_conversation
+;---------------------------------------------------------------------
+---> Updating out_generated_ tables with custom values 
+---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS csv_custom_values
+(
+	dataset VARCHAR,
+	type VARCHAR,
+	field VARCHAR,
+	values VARCHAR
+);
+
+CREATE OR REPLACE VIEW wrk_generated_custom_values AS 
+	SELECT 
+		LOWER(dataset) as dataset,
+		type,
+		LOWER(REGEXP_REPLACE(REPLACE(field,' ',''),'(\d)','')) as field,
+		values
+	FROM csv_custom_values	
+;
+
+
+
+
+---- Updating out_generated_agent ----
+
+UPDATE out_generated_agent t SET agentid = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'agentid';      
+    
+UPDATE out_generated_agent t SET firstname = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'firstname';               
+    
+UPDATE out_generated_agent t SET lastname = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'lastname';               
+    
+UPDATE out_generated_agent t SET phone = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'phone';               
+    
+UPDATE out_generated_agent t SET email = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'email';               
+    
+UPDATE out_generated_agent t SET language = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'language';               
+    
+UPDATE out_generated_agent t SET agentstatus = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'agentstatus';               
+    
+UPDATE out_generated_agent t SET manager = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'agent' AND c.field = 'manager';               
+    
+
+
+---- Updating out_generated_bot ----
+
+UPDATE out_generated_bot t SET botname = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'bot' AND c.field = 'botname';      
+    
+UPDATE out_generated_bot t SET botchannel = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'bot' AND c.field = 'botchannel';               
+    
+UPDATE out_generated_bot t SET botstatus = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'bot' AND c.field = 'botstatus';               
+    
+
+
+---- Updating out_generated_botsessions ----
+
+UPDATE out_generated_botsessions t SET sessionid = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'botsessions' AND c.field = 'sessionid';      
+    
+UPDATE out_generated_botsessions t SET sessionchannel = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'botsessions' AND c.field = 'sessionchannel';               
+    
+UPDATE out_generated_botsessions t SET expirationstatus = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'botsessions' AND c.field = 'expirationstatus';               
+      
+UPDATE out_generated_botsessions t SET sessionduration = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'botsessions' AND c.field = 'sessionduration';  
+
+
+
+---- Updating out_generated_person ----
+
+UPDATE out_generated_person t SET personid = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'personid';      
+    
+UPDATE out_generated_person t SET personfirstname = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'personfirstname';               
+    
+UPDATE out_generated_person t SET personlastname = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'personlastname';               
+    
+UPDATE out_generated_person t SET personemail = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'personemail';               
+    
+UPDATE out_generated_person t SET personphone = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'personphone';               
+    
+UPDATE out_generated_person t SET tag = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'tag';               
+    
+UPDATE out_generated_person t SET segment = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'person' AND c.field = 'segment';               
+    
+
+
+---- Updating out_generated_conversation ----
+
+UPDATE out_generated_conversation t SET conversationid = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'conversationid';      
+    
+UPDATE out_generated_conversation t SET conversationtopic = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'conversationtopic';               
+    
+UPDATE out_generated_conversation t SET conversationstatus = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'conversationstatus';               
+    
+UPDATE out_generated_conversation t SET conversationpriority = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'conversationpriority';               
+    
+UPDATE out_generated_conversation t SET conversationchannel = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'conversationchannel';               
+    
+UPDATE out_generated_conversation t SET satisfactionscorecause = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'satisfactionscorecause';               
+    
+UPDATE out_generated_conversation t SET routepriority = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'routepriority';               
+    
+UPDATE out_generated_conversation t SET queuename = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'queuename';               
+    
+UPDATE out_generated_conversation t SET department = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'department';               
+    
+UPDATE out_generated_conversation t SET answersource = randomcustomdata(c.values) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'answersource';               
+      
+UPDATE out_generated_conversation t SET resolutiontime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'resolutiontime';  
+  
+UPDATE out_generated_conversation t SET queuetime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'queuetime';  
+  
+UPDATE out_generated_conversation t SET bothandlingtime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'bothandlingtime';  
+  
+UPDATE out_generated_conversation t SET wrapuptime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'wrapuptime';  
+  
+UPDATE out_generated_conversation t SET satisfactionscore = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'satisfactionscore';  
+  
+UPDATE out_generated_conversation t SET agenthandlingtime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'agenthandlingtime';  
+  
+UPDATE out_generated_conversation t SET stresponsetime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'stresponsetime';  
+  
+UPDATE out_generated_conversation t SET platformuptime = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'platformuptime';  
+  
+UPDATE out_generated_conversation t SET numberofmessages = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'numberofmessages';  
+  
+UPDATE out_generated_conversation t SET transferredtoagentflag = randomcustomdata(c.values)::DECIMAL(12,2) 
+FROM wrk_generated_custom_values c WHERE c.dataset = 'conversation' AND c.field = 'transferredtoagentflag';  
