@@ -54,12 +54,12 @@
 
 <!-- GETTING STARTED -->
 ## Getting Started
-1. Clone this git repo and load the content (excl. `run` folder) to your S3 bucket
-2. Update `/param_definitions/LDM.json` with your freshly created LDM (from WEB modeler)
+1. Clone this git repo and load the `datagen` folder to your S3 bucket
+2. Update `/param_definitions/LDM.json` with your freshly created LDM from the WEB modeler (/admin/modeler/#/projects/{pid}). WARNING: LDM.json must be in ASCII encoding.
 3. Set up your output stage (OS) prefix (default is `out_generated_vw_`) 
 4. (Optional) Change default OS prefix in all 3 liquid templates `{%-assign out_prefix = "out_generated_vw_" -%}`
 5. (Optional) Load custom input to the table `csv_custom_values`
-6. Deploy & Run SQL executor which will trigger `01_mock_up_data.sql`
+6. Deploy & Run SQL executor to trigger `01_run_datagen.sql`
 7. Schedule & Run ADD to upload data to WS
 
 
@@ -85,7 +85,7 @@ To run update with custom values you need to run generate OS, populate OS and **
 
 ## Run on Local
 If you don't want to set up the SQL Executor to generate the code you can render the templates on the local machine using Ruby. 
-Update the `param_definitions/LDM.json` with your LDM and the script `/run/RunLiquid.rb` to render required template and then simply run the script `jruby run/RunLiquid.rb`. It will generate the SQL which you can then use in the ADS.
+Update the `datagen/param_definitions/LDM.json` with your LDM, update the script `run_local.rb` to render required template and then simply run the script `jruby run_local.rb`. It will generate the SQL which you can then use in the ADS.
 
 
 
