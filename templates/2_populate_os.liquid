@@ -1,3 +1,8 @@
+{%-assign out_prefix = "out_generated_" -%}
+{%-assign number_of_lines_fact = "1000" -%}
+{%-assign number_of_lines_dimension = "100" -%}
+{%-assign number_of_values_in_attribute = "30" -%}
+
 ---------------------------------------------------------------------
 ---> Temporary tables  
 ---------------------------------------------------------------------
@@ -13,10 +18,11 @@ SELECT row_number() over () ID
 FROM system_tables s 
 CROSS JOIN system_tables l 
 
-limit 2000
+limit {{number_of_lines_fact}}
 ;
+
 ---------------------------------------------------------------------
----> Random functions   
+---> Randomizing functions   
 ---------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION randomdate (d1 TIMESTAMP, d2 TIMESTAMP) RETURN DATE
 AS
@@ -24,19 +30,33 @@ BEGIN
   RETURN TO_TIMESTAMP(EXTRACT(EPOCH FROM d1) + RANDOMINT(FLOOR(EXTRACT(EPOCH FROM d2) - EXTRACT(EPOCH FROM d1))::INT));
 END;
 
-CREATE OR REPLACE FUNCTION randomdata (id INT, field VARCHAR, cp BOOLEAN) RETURN VARCHAR
+CREATE OR REPLACE FUNCTION randomdata (id INT, field VARCHAR, cp BOOLEAN, geo VARCHAR) RETURN VARCHAR
 AS
 BEGIN
-   RETURN CASE WHEN cp is TRUE THEN id::INT || '_' || field
-          ELSE (random()*id)::INT || '_' || field END;
+   RETURN 
+        CASE 
+            WHEN geo = 'pushpin' THEN (1-(random()*2))::INT*40 || ';' || ((2-(random()*6))::INT*90) -- generating a random pushpin
+            WHEN cp is TRUE THEN id::INT || '_' || field -- when field is cp it will gereate within a limit for a dim table, default is 100
+            ELSE (random()*id)::INT || '_' || field -- for other attributes it's a variety of X values, default is 30 
+        END;
 END;
 
-CREATE OR REPLACE FUNCTION randomfact (minimum INT, maximum INT) RETURN VARCHAR
+CREATE OR REPLACE FUNCTION randomfact (minimum INT, maximum INT) RETURN INT
 AS
 BEGIN
-   RETURN (random()*ABS(maximum-minimum))::INT + 
-        CASE WHEN maximum > minimum THEN minimum 
+   RETURN (random()*ABS(maximum-minimum))::INT +
+        CASE WHEN maximum > minimum THEN minimum
         ELSE maximum END;
+END;
+
+CREATE OR REPLACE FUNCTION randomcustomdata(values VARCHAR) RETURN VARCHAR
+AS
+BEGIN
+   RETURN 	
+   	CASE 
+		WHEN values LIKE '%,%' THEN TRIM(SPLIT_PART(values,',', (FLOOR(RANDOM() * (REGEXP_COUNT(values,',') + 1) + 1 ))::INT))
+		WHEN values LIKE '%-%' THEN randomfact(SPLIT_PART(values,'-',1)::INT, SPLIT_PART(values,'-',2)::INT)::VARCHAR
+	END;
 END;
 
 
@@ -62,80 +82,11 @@ END;
 {%- endfor -%} 
 {%- assign connectionpoints = connectionpoints | split: ',' -%}
 
-
-{%-assign out_prefix = "out_test_" %}
-
 ---------------------------------------------------------------------
----> Dropping {{out_prefix}} tables  
---------------------------------------------------------------------- 
+---> Populating {{out_prefix}} tables 
+---------------------------------------------------------------------
 {%- for dataset in model.projectModel.datasets %}
-DROP TABLE IF EXISTS {{out_prefix}}{{dataset.dataset.identifier | remove: "dataset." }};
-{%- endfor %}
-
----------------------------------------------------------------------
----> Creating {{out_prefix}} tables 
----------------------------------------------------------------------
-{% for dataset in model.projectModel.datasets %}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} %}
-
----- Creating {{out_prefix}}{{dataset_name}} ----
-
-CREATE TABLE IF NOT EXISTS {{out_prefix}}{{dataset_name}} (
-{{}}
-    {% comment %} cp {% endcomment %} 
-    {%- assign anchor_first_attribute_factsof = {{dataset.dataset.anchor.attribute.identifier | split: "."}} -%}                            
-    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
-        {%- for label in dataset.dataset.anchor.attribute.labels -%}
-            {%- assign current_label = {{label.label.identifier}} -%}
-            {%- assign label_split = {{current_label | split: "."}} -%}
-    {{label_split[-1]}} {{label.label.dataType}}
-        {%- unless forloop.last -%},
-    {% endunless -%}            
-        {%- endfor -%}
-    {%- if dataset.dataset.attributes or dataset.dataset.references -%},
-    {% endif %}      
-    {%- endif -%}
-    {%- if dataset.dataset.attributes -%}
-        {% comment %} attributes {% endcomment %}         
-        {%- for attribute in dataset.dataset.attributes -%}
-            {%- for label in attribute.attribute.labels -%}
-                {%- assign current_label = {{label.label.identifier}} -%}
-                {%- assign label_split = {{current_label | split: "."}} -%}
-        {{label_split[-1]}} {{label.label.dataType}}
-            {%- unless forloop.last -%},
-        {% endunless -%}            
-            {%- endfor -%}    
-        {%- unless forloop.last -%},
-        {% endunless -%}               
-        {%- endfor -%}  
-        {% comment %} references {% endcomment %}
-        {%- if dataset.dataset.references -%},
-        {% endif %}
-    {%- endif %}
-    {%- for reference in dataset.dataset.references -%}
-        {%- assign reference_split = {{reference | split: "."}} -%}
-        {%- if reference_split[0] == "dataset" -%}
-            {%- for cp in connectionpoints -%}
-                {%- assign current_cp = {{cp | split: '-'}} -%}
-                {%- if reference_split[1] == {{current_cp[0]}} %}{{current_cp[1]}} {{current_cp[2]}}{%- endif -%}                
-            {%- endfor -%}
-        {%- else %}{{reference}} DATE
-        {%- endif -%}
-    {%- unless forloop.last -%},
-    {% endunless -%}               
-    {%- endfor -%} 
-    {% comment %} facts {% endcomment %}
-    {%- if dataset.dataset.facts -%},
-    {% endif %}        
-    {%- for fact in dataset.dataset.facts -%}
-            {%- assign fact_split = {{fact.fact.identifier | split: "."}} -%}
-            {{fact_split[-1]}} {{fact.fact.dataType}}             
-    {%- unless forloop.last -%},
-    {% endunless -%}               
-    {%- endfor -%}     
-{{}}
-{{}} {% comment %} kudrlinky pro Michala {% endcomment %}     
-);
 
 ---- Inserting Data to {{out_prefix}}{{dataset_name}} ----
 
@@ -162,15 +113,15 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
             {%- for label in attribute.attribute.labels -%}
                 {%- assign current_label = {{label.label.identifier}} -%}
                 {%- assign label_split = {{current_label | split: "."}} -%}
-        {{label_split[-1]}} 
+    {{label_split[-1]}} 
             {%- unless forloop.last -%},
-        {% endunless -%}            
+    {% endunless -%}            
             {%- endfor -%}    
         {%- unless forloop.last -%},
-        {% endunless -%}               
+    {% endunless -%}               
         {%- endfor -%} 
-        {%- if dataset.dataset.references -%},
-        {% endif %}          
+    {%- if dataset.dataset.references -%},
+    {% endif %}          
     {%- endif -%}    
     {% comment %} references {% endcomment %}    
     {%- for reference in dataset.dataset.references -%}
@@ -195,6 +146,7 @@ INSERT INTO {{out_prefix}}{{dataset_name}} (
     {% endunless -%}               
     {%- endfor -%}
 {{}}    
+
 )
 
 SELECT DISTINCT
@@ -207,8 +159,9 @@ SELECT DISTINCT
             {%- assign label_split = {{current_label | split: "."}} -%}
                     {%- for cp in connectionpoints -%}
                         {%- assign current_cp = {{cp | split: '-'}} -%}
-                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}randomdata(ID,'{{label_split[-1]}}',TRUE) as {{label_split[-1]}}
-                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} %}randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+                        {%- if label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}}  == "INT"%}ID as {{label_split[-1]}}
+                        {%- elsif label_split[-1] == {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}}  != "INT"%}randomdata(ID,'{{label_split[-1]}}',TRUE,'{{label_split[-1]}}') as {{label_split[-1]}}
+                        {%- elsif label_split[-1] != {{current_cp[1]}} and {{dataset_name}} == {{current_cp[0]}} and {{current_cp[2]}}  != "INT"%}randomdata({{number_of_values_in_attribute}},'{{label_split[-1]}}',FALSE,'{{label_split[-1]}}') as {{label_split[-1]}}
                         {%- endif -%} 
                     {%- endfor -%}
         {%- unless forloop.last -%},
@@ -224,15 +177,19 @@ SELECT DISTINCT
             {%- for label in attribute.attribute.labels -%}
                 {%- assign current_label = {{label.label.identifier}} -%}
                 {%- assign label_split = {{current_label | split: "."}} -%}
-        randomdata(30,'{{label_split[-1]}}',FALSE) as {{label_split[-1]}}
+    {%- if label.label.dataType  == "INT" -%} 
+        (random()*{{number_of_values_in_attribute}})::INT as {{label_split[-1]}}
+    {%- elsif label.label.dataType  != "INT" -%} 
+        randomdata({{number_of_values_in_attribute}},'{{label_split[-1]}}',FALSE,'{{label_split[-1]}}') as {{label_split[-1]}}
+    {%- endif -%} 
             {%- unless forloop.last -%},
-        {% endunless -%}            
+    {% endunless -%}            
             {%- endfor -%}    
         {%- unless forloop.last -%},
-        {% endunless -%}               
+    {% endunless -%}               
         {%- endfor -%} 
-        {%- if dataset.dataset.references -%},
-        {% endif %}
+    {%- if dataset.dataset.references -%},
+    {% endif %}
     {%- endif -%}    
     {% comment %} references {% endcomment %}
     {%- for reference in dataset.dataset.references -%}
@@ -240,7 +197,9 @@ SELECT DISTINCT
         {%- if reference_split[0] == "dataset" -%}
             {%- for cp in connectionpoints -%}
                 {%- assign current_cp = {{cp | split: '-'}} -%}
-                {%- if reference_split[1] == {{current_cp[0]}} %}randomdata(30,'{{current_cp[1]}}',FALSE) as {{current_cp[1]}} {%- endif -%}                
+                {%- if reference_split[1] == {{current_cp[0]}} and {{current_cp[2]}}  == "INT"-%} (random()*{{number_of_values_in_attribute}})::INT as {{current_cp[1]}} 
+                {%- elsif reference_split[1] == {{current_cp[0]}} and {{current_cp[2]}}  != "INT" -%}randomdata({{number_of_values_in_attribute}},'{{current_cp[1]}}',FALSE,'{{current_cp[1]}}') as {{current_cp[1]}}
+                {%- endif -%}
             {%- endfor -%}
         {%- else %}randomdate(now()-300,now() ) as {{reference}}
         {%- endif -%}
@@ -264,11 +223,14 @@ FROM
      order by id
 {% comment %} {% endcomment %}
 {%- if {(dataset.dataset.facts.first)} -%}
-     limit 1000
+     limit {{number_of_lines_fact}}
 {%- else -%} 
-     limit 50
+     limit {{number_of_lines_dimension}}
 {%- endif -%}
 ) a ;
 
-
 {% endfor -%}
+
+
+
+

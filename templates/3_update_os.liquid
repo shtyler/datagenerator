@@ -1,14 +1,28 @@
 {%-assign out_prefix = "out_generated_" -%}
 
-CREATE OR REPLACE FUNCTION randomcustomdata(values VARCHAR) RETURN VARCHAR
-AS
-BEGIN
-   RETURN 	
-   	CASE 
-		WHEN values LIKE '%,%' THEN TRIM(SPLIT_PART(values,',', (FLOOR(RANDOM() * (REGEXP_COUNT(values,',') + 1) + 1 ))::INT))
-		WHEN values LIKE '%-%' THEN randomfact(SPLIT_PART(values,'-',1)::INT, SPLIT_PART(values,'-',2)::INT)::VARCHAR
-	END;
-END;
+
+{% comment %} populating connectionpoints array {% endcomment %}
+{%- assign connectionpoints = ''-%}
+{%- for dataset in model.projectModel.datasets -%}
+{%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}	
+        {%- assign attribute_split = {{dataset.dataset.anchor.attribute.identifier}} | split: "." -%}
+        {%- assign default_attribute = {{attribute_split[1]}} | append: "." | append: {{attribute_split[2]}} -%}    
+        {%- for label in dataset.dataset.anchor.attribute.labels -%}
+            {%- assign current_label = {{label.label.identifier}} -%}
+            {%- assign label_split = {{current_label | split: "."}} -%}
+            {%- assign default_label = {{label_split[-2]}} | append: "." | append: {{label_split[-1]}} -%}
+            {%- if {{default_attribute == default_label  %}  
+                {%- assign connectionpoints = connectionpoints 
+                    | append: {{dataset_name}} | append: "-" 
+                    | append: {{label_split[-1]}} | append: "-" 
+                    | append: {{label.label.dataType}}| append: "," -%}                
+            {% endif -%}             
+        {%- endfor -%}   
+    {%- endif -%}
+{%- endfor -%} 
+{%- assign connectionpoints = connectionpoints | split: ',' -%}
+
 
 ---------------------------------------------------------------------
 ---> Updating {{out_prefix}} tables with custom values 
@@ -16,7 +30,6 @@ END;
 CREATE TABLE IF NOT EXISTS csv_custom_values
 (
 	dataset VARCHAR,
-	type VARCHAR,
 	field VARCHAR,
 	values VARCHAR
 );
@@ -24,7 +37,6 @@ CREATE TABLE IF NOT EXISTS csv_custom_values
 CREATE OR REPLACE VIEW wrk_generated_custom_values AS 
 	SELECT 
 		LOWER(dataset) as dataset,
-		type,
 		LOWER(REGEXP_REPLACE(REPLACE(field,' ',''),'(\d)','')) as field,
 		values
 	FROM csv_custom_values	
@@ -59,8 +71,9 @@ FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.fi
 UPDATE {{out_prefix}}{{dataset_name}} t SET {{fact_split[-1]}} = randomcustomdata(c.values)::{{fact.fact.dataType}} 
 FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{fact_split[-1]}}';  
 {{}}                
-{%- endfor -%}    
+{%- endfor -%}  
       
 
 {%- endfor -%}
+
 
