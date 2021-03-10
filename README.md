@@ -59,7 +59,7 @@
 3. Load the `datagen` folder to your S3 bucket
 4. Set up your output stage (OS) prefix (default is `out_generated_vw_`) 
 5. (Optional) Change default OS prefix in all 3 liquid templates `{%-assign out_prefix = "out_generated_vw_" -%}`
-6. (Optional) Load custom input to the table `csv_custom_values`
+6. (Optional) Load custom input to the table `generated_custom_values (dataset VARCHAR, field VARCHAR, values VARCHAR)`. See Example 3.
 7. Deploy & Run SQL executor to trigger `01_run_datagen.sql`
 8. Schedule & Run ADD to upload data to WS
 
@@ -78,9 +78,9 @@ Mockup data are generated under simple principles with respect to referential in
 These can be changed in the template. Date values are always generated within previous 300 days. To run mockup data generation you need to run generate OS and **2_populate_os.liquid** template. Adjust 01_run_datagen.sql accordingly.
 
 ### Example 3 - Creating the output stage, populating it with mockup data and updating it with custom values.
-If you need to use your custom values in the attributes or facts you can load them to `csv_custom_values` table with following structure (dataset, field, values) by using copy command. 
-`dataset` and `field` have to match values in the LDM (last part of the identifier). In `values` you can use either list of values separated by comma (`,`) 
-or range of values separated by dash (`-`). Real values for the particular field will be generated randomly from the given list or range. 
+If you need to use your custom values in the attributes or facts you can load them to `generated_custom_values` table with following structure (dataset, field, values) by using copy command. Table will be automatically created during the first run of SQL Executor or you can create it before. Then you can either update the table manually or copy command the values into it from CSV.  
+`dataset` and `field` have to match values in the LDM (last part of the identifier). In `values` you can use either list of values separated by comma (`,`), e.g. "Plzeň, Matuška, Konrád".
+or range of numeric values separated by dash (`-`), e.g. "1 - 50". Real values for the particular field will be generated randomly from the given list or range. 
 _The solution does not yet support custom values for dates, connection points and references._
 To run update with custom values you need to run generate OS, populate OS and **3_update_os.liquid**. Adjust 01_run_datagen.sql accordingly.
 
@@ -120,7 +120,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@pbobkov](https://twitter.com/pbobkov) - pavel.bobkov@gooddata.com
+Twitter [@pbobkov](https://twitter.com/pbobkov) 
+Email pavel.bobkov@gooddata.com
 
 Project Link: [https://github.com/shtyler/datagenerator](https://github.com/shtyler/datagenerator)
 
@@ -129,12 +130,11 @@ Project Link: [https://github.com/shtyler/datagenerator](https://github.com/shty
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 
-* Thanks to my mom
 * [Thanks to Michal Nikodem](https://www.linkedin.com/in/michalnikodem/)
 * [Thanks to GoodData](www.gooddata.com/data-sources)
+* Thanks to my mom
  
--> without them and those it would not have happened
-
+-> without them this would be impossible
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
