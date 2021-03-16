@@ -5,27 +5,27 @@
 {%- assign connectionpoints = ''-%}
 {%- for dataset in model.projectModel.datasets -%}
 {%- assign dataset_name = {{dataset.dataset.identifier | remove: "dataset." }} -%}
-    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}	
+    {%- if anchor_first_attribute_factsof[2] != "factsof"  -%}
         {%- assign attribute_split = {{dataset.dataset.anchor.attribute.identifier}} | split: "." -%}
-        {%- assign default_attribute = {{attribute_split[1]}} | append: "." | append: {{attribute_split[2]}} -%}    
+        {%- assign default_attribute = {{attribute_split[1]}} | append: "." | append: {{attribute_split[2]}} -%}
         {%- for label in dataset.dataset.anchor.attribute.labels -%}
             {%- assign current_label = {{label.label.identifier}} -%}
             {%- assign label_split = {{current_label | split: "."}} -%}
             {%- assign default_label = {{label_split[-2]}} | append: "." | append: {{label_split[-1]}} -%}
-            {%- if {{default_attribute == default_label  %}  
-                {%- assign connectionpoints = connectionpoints 
-                    | append: {{dataset_name}} | append: "-" 
-                    | append: {{label_split[-1]}} | append: "-" 
-                    | append: {{label.label.dataType}}| append: "," -%}                
-            {% endif -%}             
-        {%- endfor -%}   
+            {%- if {{default_attribute == default_label  %}
+                {%- assign connectionpoints = connectionpoints
+                    | append: {{dataset_name}} | append: "-"
+                    | append: {{label_split[-1]}} | append: "-"
+                    | append: {{label.label.dataType}}| append: "," -%}
+            {% endif -%}
+        {%- endfor -%}
     {%- endif -%}
-{%- endfor -%} 
+{%- endfor -%}
 {%- assign connectionpoints = connectionpoints | split: ',' -%}
 
 
 ---------------------------------------------------------------------
----> Updating {{out_prefix}} tables with custom values 
+---> Updating {{out_prefix}} tables with custom values
 ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS generated_custom_values
 (
@@ -34,12 +34,12 @@ CREATE TABLE IF NOT EXISTS generated_custom_values
 	values VARCHAR
 );
 
-CREATE OR REPLACE VIEW wrk_generated_custom_values AS 
-	SELECT 
+CREATE OR REPLACE VIEW wrk_generated_custom_values AS
+	SELECT
 		LOWER(dataset) as dataset,
 		LOWER(REGEXP_REPLACE(REPLACE(field,' ',''),'(\d)','')) as field,
 		values
-	FROM csv_custom_values	
+	FROM csv_custom_values
 ;
 
 {% for dataset in model.projectModel.datasets -%}
@@ -48,32 +48,30 @@ CREATE OR REPLACE VIEW wrk_generated_custom_values AS
 
 ---- Updating {{out_prefix}}{{dataset_name}} ----
 {{}}
-{%- if anchor_first_attribute_factsof[2] != "factsof"  -%}  
+{%- if anchor_first_attribute_factsof[2] != "factsof"  -%}
     {% for label in dataset.dataset.anchor.attribute.labels %}
         {%- assign current_label = {{label.label.identifier}} -%}
         {% assign label_split = {{current_label | split: "."}} %}
-UPDATE {{out_prefix}}{{dataset_name}} t SET {{label_split[-1]}} = randomcustomdata(c.values) 
-FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{label_split[-1]}}';      
+UPDATE {{out_prefix}}{{dataset_name}} t SET {{label_split[-1]}} = randomcustomdata(c.values)::{{label.label.dataType}} 
+FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{label_split[-1]}}';
     {% endfor %}
-{%- endif -%}  
-{{}}      
+{%- endif -%}
+{{}}
 {%- for attribute in dataset.dataset.attributes -%}
     {% for label in attribute.attribute.labels %}
         {%- assign current_label = {{label.label.identifier}} -%}
         {% assign label_split = {{current_label | split: "."}} %}
-UPDATE {{out_prefix}}{{dataset_name}} t SET {{label_split[-1]}} = randomcustomdata(c.values) 
-FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{label_split[-1]}}';               
-    {% endfor %}    
-{%- endfor -%}  
-    
-{%- for fact in dataset.dataset.facts -%}
-    {% assign fact_split = {{fact.fact.identifier | split: "."}} %}  
-UPDATE {{out_prefix}}{{dataset_name}} t SET {{fact_split[-1]}} = randomcustomdata(c.values)::{{fact.fact.dataType}} 
-FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{fact_split[-1]}}';  
-{{}}                
-{%- endfor -%}  
-      
+UPDATE {{out_prefix}}{{dataset_name}} t SET {{label_split[-1]}} = randomcustomdata(c.values)::{{label.label.dataType}}
+FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{label_split[-1]}}';
+    {% endfor %}
+{%- endfor -%}
 
+{%- for fact in dataset.dataset.facts -%}
+    {% assign fact_split = {{fact.fact.identifier | split: "."}} %}
+UPDATE {{out_prefix}}{{dataset_name}} t SET {{fact_split[-1]}} = randomcustomdata(c.values)::{{fact.fact.dataType}}
+FROM wrk_generated_custom_values c WHERE c.dataset = '{{dataset_name}}' AND c.field = '{{fact_split[-1]}}';
+{{}}
 {%- endfor -%}
 
 
+{%- endfor -%}
