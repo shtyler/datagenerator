@@ -39,7 +39,7 @@ CREATE OR REPLACE VIEW wrk_generated_custom_values AS
 		LOWER(dataset) as dataset,
 		LOWER(REGEXP_REPLACE(REPLACE(field,' ',''),'(\d)','')) as field,
 		values
-	FROM csv_custom_values	
+	FROM generated_custom_values	
 ;
 
 {% for dataset in model.projectModel.datasets -%}
