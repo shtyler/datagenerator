@@ -60,7 +60,7 @@
 4. Set up your output stage (OS) prefix (default is `out_generated_vw_`) 
 5. (Optional) Change default OS prefix in all 3 liquid templates `{%-assign out_prefix = "out_generated_vw_" -%}`
 6. (Optional) Load custom input to the table `generated_custom_values (dataset VARCHAR, field VARCHAR, values VARCHAR)`. See Example 3.
-7. Deploy & Run SQL executor to trigger `01_run_datagen.sql`
+7. Deploy & Run SQL executor to trigger `00_create_functions.sql` and `01_run_datagen.sql`
 8. Schedule & Run ADD to upload data to WS
 
 
@@ -132,9 +132,7 @@ Project Link: [https://github.com/shtyler/datagenerator](https://github.com/shty
 
 * [Thanks to Michal Nikodem](https://www.linkedin.com/in/michalnikodem/)
 * [Thanks to GoodData](www.gooddata.com/data-sources)
-* Thanks to my mom
- 
--> without them this would be impossible
+
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
