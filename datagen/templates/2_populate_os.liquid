@@ -14,7 +14,7 @@ ID INT
 
 INSERT INTO tmp_generation_table 
 
-SELECT row_number() over () ID 
+SELECT row_number() over () - 1 ID 
 FROM system_tables s 
 CROSS JOIN system_tables l 
 
